@@ -5,11 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.learning_android"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.learning_android"
@@ -40,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation("com.github.franmontiel:PersistentCookieJar:v1.0.1")
     implementation("com.patrykandpatrick.vico:compose:1.13.1")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")

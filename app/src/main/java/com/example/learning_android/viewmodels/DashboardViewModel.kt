@@ -34,10 +34,10 @@ class DashboardViewModel : ViewModel() {
             try{
                 val response = ApiClient.deviceApiService.getAllDevices()
                 Log.e("API_TEST",response.toString())
-                val resDevices = response.toDomain();
+                val resDevices = response.body()?.toDomain();
 
                 devices = resDevices
-                DeviceRepository.devices = resDevices;
+                DeviceRepository.devices = resDevices ?: emptyList();
             }
             catch (e: Exception) {
                 Log.e("API_TEST", "Error: ${e.message}")

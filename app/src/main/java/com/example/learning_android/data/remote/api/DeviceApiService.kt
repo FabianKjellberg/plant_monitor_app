@@ -9,7 +9,7 @@ import retrofit2.http.PUT
 
 interface DeviceApiService {
     @GET("device/all")
-    suspend fun getAllDevices (): GetDevicesResponseDTO
+    suspend fun getAllDevices (): Response<GetDevicesResponseDTO>
 
     @PUT("device/name")
     suspend fun changeDeviceName(

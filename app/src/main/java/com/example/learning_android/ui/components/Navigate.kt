@@ -8,14 +8,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.learning_android.ui.screens.Dashboard
 import com.example.learning_android.ui.screens.DevicePage
+import com.example.learning_android.ui.screens.Entry
 import com.example.learning_android.ui.screens.Home
 import com.example.learning_android.ui.screens.Login
 import com.example.learning_android.viewmodels.DashboardViewModel
 import com.example.learning_android.viewmodels.DevicePageViewModel
+import com.example.learning_android.viewmodels.EntryViewModel
 import com.example.learning_android.viewmodels.LoginViewModel
 
 enum class AppPage(val route: String) {
-    HOME("home"),
+    ENTRY("entry"),
     ADD_DEVICE("add_device"),
     DASHBOARD("dashboard"),
     LOGIN("login"),
@@ -30,10 +32,25 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = AppPage.DASHBOARD.route,
+        startDestination = AppPage.ENTRY.route,
     ) {
-        composable(route = AppPage.HOME.route) {
-            Home(navigate = {page -> navController.navigate((page.route))})
+        composable(route = AppPage.ENTRY.route) {
+            val viewModel = remember {
+                EntryViewModel(
+                    onRedirect = { nav ->
+                        navController.navigate(nav) {
+                            popUpTo(AppPage.ENTRY.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
+            }
+
+            Entry(
+                viewModel = viewModel,
+
+            )
         }
 
         composable(route = AppPage.LOGIN.route) {
@@ -42,7 +59,7 @@ fun AppNavigation() {
             Login(
                 onLoginSuccess = {
                     navController.navigate(AppPage.DASHBOARD.route) {
-                        popUpTo(AppPage.HOME.route) {
+                        popUpTo(AppPage.LOGIN.route) {
                             inclusive = true
                         }
                     }
@@ -61,7 +78,7 @@ fun AppNavigation() {
             )
         }
 
-        composable( route = "${AppPage.DEVICE_PAGE.route}/{deviceId}" ) { entry ->
+        composable( route = "${AppPage.DEVICE_PAGE.route}/{deviceId}" ) {
             val viewModel: DevicePageViewModel = viewModel()
             viewModel.loadData();
 

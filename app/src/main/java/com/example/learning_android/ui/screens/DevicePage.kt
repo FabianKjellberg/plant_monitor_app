@@ -61,7 +61,7 @@ fun DevicePage(
                 fontSize = 24.sp,
                 modifier = Modifier.weight(1F)
             )
-            DevicePageDropdown(viewModel.device?.name ?: "unknown")
+            DevicePageDropdown(viewModel.device?.name ?: "unknown", onChangeName = {})
         }
 
         MetricDropDown(
