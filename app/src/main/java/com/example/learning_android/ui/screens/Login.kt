@@ -11,13 +11,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.learning_android.ui.components.AppPage
+import com.example.learning_android.domain.model.AppPage
 import com.example.learning_android.viewmodels.LoginViewModel
 
 @Composable
 fun Login(navController: NavController, viewModel: LoginViewModel){
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { page ->
+        viewModel.navigationEvent.collect { page: AppPage ->
             navController.navigate(page.route) {
                 popUpTo(AppPage.LOGIN.route) { inclusive = true }
             }

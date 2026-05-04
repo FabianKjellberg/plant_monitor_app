@@ -57,11 +57,11 @@ fun DevicePage(
                 )
             }
             Text(
-                text = viewModel.device?.name ?: "Unknown",
+                text = viewModel.device?.deviceName ?: "Unknown",
                 fontSize = 24.sp,
                 modifier = Modifier.weight(1F)
             )
-            DevicePageDropdown(viewModel.device?.name ?: "unknown", onChangeName = {})
+            DevicePageDropdown(viewModel.device?.deviceName ?: "unknown", onChangeName = {})
         }
 
         MetricDropDown(

@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.learning_android.ui.components.AppPage
+import com.example.learning_android.domain.model.AppPage
 
 @Composable
 fun Home(navigate: (AppPage) -> Unit) {

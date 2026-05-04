@@ -13,7 +13,7 @@ object DeviceRepository {
     fun updateDeviceName(id: String, name: String) {
         devices.map { device ->
             if (device.deviceId == id) {
-                device.copy(name = name)
+                device.copy(deviceName = name)
             }
             else {
                 device

@@ -105,7 +105,7 @@ fun DeviceCard(device: PotDevice, onClick: () -> Unit) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = device.name,
+                        text = device.deviceName,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(vertical = 4.dp)

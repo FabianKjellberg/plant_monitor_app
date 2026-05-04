@@ -1,5 +1,12 @@
 package com.example.learning_android.ui.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,11 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +26,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.learning_android.domain.model.AppPage
 import com.example.learning_android.domain.model.DashboardNav
-import com.example.learning_android.ui.components.AppPage
 import com.example.learning_android.ui.components.dashboard.BottomNavBar
 import com.example.learning_android.ui.components.dashboard.DashboardHeader
-import com.example.learning_android.ui.components.DeviceCard
 import com.example.learning_android.ui.components.dashboard.DashboardDeviceContent
+import com.example.learning_android.ui.components.dashboard.DashboardPlacesContent
 import com.example.learning_android.viewmodels.DashboardViewModel
 
 @Composable
@@ -74,18 +78,37 @@ fun Dashboard (
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
                         .padding(top = 20.dp, bottom = 80.dp)
                         .padding(horizontal = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    AnimatedContent(
+                        targetState = viewModel.dashboardNav,
+                        transitionSpec = {
 
-                    DashboardDeviceContent(
-                        devices = viewModel.devices,
-                        onClickCard = {
-                            deviceId -> navController.navigate("${AppPage.DEVICE_PAGE.route}/${deviceId}")
+                            if (targetState == DashboardNav.PLACES) {
+                                slideInHorizontally { it } togetherWith
+                                        slideOutHorizontally { -it }
+                            } else {
+
+                                slideInHorizontally { -it }  togetherWith
+                                        slideOutHorizontally { it }
+                            }
+                        },
+                        label = "DashboardTransition"
+                    ) { targetNav ->
+                        when (targetNav) {
+                            DashboardNav.DEVICES ->
+                                DashboardDeviceContent(
+                                    devices = viewModel.devices,
+                                    onClickCard = { deviceId ->
+                                        navController.navigate("${AppPage.DEVICE_PAGE.route}/${deviceId}")
+                                    }
+                                )
+                            DashboardNav.PLACES -> DashboardPlacesContent()
                         }
-                    )
+                    }
+
                 }
 
                 Box(
@@ -111,7 +134,8 @@ fun Dashboard (
             ) {
                 BottomNavBar(
                     onNavClick = { nav -> viewModel.onChangeNav(nav) },
-                    nav = viewModel.dashboardNav
+                    nav = viewModel.dashboardNav,
+                    onAddClick = {nav -> navController.navigate(nav.route)}
                 )
             }
         }

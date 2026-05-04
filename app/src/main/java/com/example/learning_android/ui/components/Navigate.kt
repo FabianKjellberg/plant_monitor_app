@@ -1,31 +1,23 @@
 package com.example.learning_android.ui.components
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.learning_android.domain.model.AppPage
+import com.example.learning_android.ui.screens.AddDevice
 import com.example.learning_android.ui.screens.Dashboard
 import com.example.learning_android.ui.screens.DevicePage
 import com.example.learning_android.ui.screens.Entry
-import com.example.learning_android.ui.screens.Home
 import com.example.learning_android.ui.screens.Login
+import com.example.learning_android.viewmodels.AddDeviceViewModel
 import com.example.learning_android.viewmodels.DashboardViewModel
 import com.example.learning_android.viewmodels.DevicePageViewModel
 import com.example.learning_android.viewmodels.EntryViewModel
 import com.example.learning_android.viewmodels.LoginViewModel
-
-enum class AppPage(val route: String) {
-    ENTRY("entry"),
-    ADD_DEVICE("add_device"),
-    DASHBOARD("dashboard"),
-    LOGIN("login"),
-    REGISTER("register"),
-    DEVICE_PAGE("device_page")
-
-}
-
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -72,6 +64,16 @@ fun AppNavigation() {
                 viewModel = viewModel,
                 navController = navController
             )
+        }
+
+        composable( route = AppPage.ADD_DEVICE.route) {
+            val viewModel: AddDeviceViewModel = viewModel()
+
+            AddDevice(viewModel)
+        }
+
+        composable( route = AppPage.ADD_PLACE.route) {
+            Text("not created")
         }
     }
 }

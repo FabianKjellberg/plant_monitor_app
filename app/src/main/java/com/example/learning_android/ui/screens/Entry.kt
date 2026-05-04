@@ -12,14 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.learning_android.ui.components.AppPage
+import com.example.learning_android.domain.model.AppPage
 import com.example.learning_android.viewmodels.EntryViewModel
+import kotlinx.coroutines.flow.*
 
 @Composable
 fun Entry(viewModel: EntryViewModel, navController: NavController) {
 
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { page ->
+        viewModel.navigationEvent.collect { page: AppPage ->
             navController.navigate(page.route) {
                 popUpTo(AppPage.ENTRY.route) { inclusive = true }
             }

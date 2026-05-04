@@ -6,11 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.learning_android.business.AuthService
 import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.data.remote.client.TokenManager
 import com.example.learning_android.data.remote.dto.LoginRequestDto
-import com.example.learning_android.ui.components.AppPage
+import com.example.learning_android.domain.model.AppPage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch

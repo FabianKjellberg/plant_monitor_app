@@ -97,7 +97,7 @@ class DevicePageViewModel(
 
     fun updateDeviceName(name: String){
         viewModelScope.launch {
-            val oldName = device?.name ?: "unknown"
+            val oldName = device?.deviceName ?: "unknown"
             DeviceRepository.updateDeviceName(deviceId, name)
 
             val body = UpdateNameRequestDto(

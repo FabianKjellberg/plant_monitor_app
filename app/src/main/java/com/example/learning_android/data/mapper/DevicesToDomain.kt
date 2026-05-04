@@ -16,7 +16,7 @@ fun DeviceDTO.toDomain(): PotDevice{
 
     return PotDevice(
         deviceId = deviceId,
-        name = name ?: "Unnamed Device",
+        deviceName = deviceName ?: "Unnamed Device",
         batteryPercentage = batteryPercentage,
         batteryReadAt = batteryReadAt?.let { Instant.parse(batteryReadAt) }
     )
