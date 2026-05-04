@@ -7,14 +7,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import com.example.learning_android.ui.components.AppPage
 import com.example.learning_android.viewmodels.LoginViewModel
 
 @Composable
-fun Login(onLoginSuccess: () -> Unit, viewModel: LoginViewModel){
-    if(viewModel.isLoggedIn) {
-        onLoginSuccess();
+fun Login(navController: NavController, viewModel: LoginViewModel){
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { page ->
+            navController.navigate(page.route) {
+                popUpTo(AppPage.LOGIN.route) { inclusive = true }
+            }
+        }
     }
 
     Column(
@@ -35,7 +42,10 @@ fun Login(onLoginSuccess: () -> Unit, viewModel: LoginViewModel){
             onValueChange = {viewModel.password = it}
         )
 
-        Button(onClick = { viewModel.onLoginClick() }){
+        Button(
+            onClick = { viewModel.onLoginClick() },
+            enabled = !viewModel.loading
+        ){
             Text("Login")
         }
     }

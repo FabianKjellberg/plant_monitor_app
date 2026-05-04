@@ -36,20 +36,12 @@ fun AppNavigation() {
     ) {
         composable(route = AppPage.ENTRY.route) {
             val viewModel = remember {
-                EntryViewModel(
-                    onRedirect = { nav ->
-                        navController.navigate(nav) {
-                            popUpTo(AppPage.ENTRY.route) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
+                EntryViewModel()
             }
 
             Entry(
                 viewModel = viewModel,
-
+                navController = navController
             )
         }
 
@@ -57,13 +49,7 @@ fun AppNavigation() {
             val viewModel = remember { LoginViewModel() }
 
             Login(
-                onLoginSuccess = {
-                    navController.navigate(AppPage.DASHBOARD.route) {
-                        popUpTo(AppPage.LOGIN.route) {
-                            inclusive = true
-                        }
-                    }
-                },
+                navController = navController,
                 viewModel = viewModel
             )
         }

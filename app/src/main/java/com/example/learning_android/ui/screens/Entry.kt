@@ -7,13 +7,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.learning_android.ui.components.AppPage
 import com.example.learning_android.viewmodels.EntryViewModel
 
 @Composable
-fun Entry(viewModel: EntryViewModel) {
+fun Entry(viewModel: EntryViewModel, navController: NavController) {
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { page ->
+            navController.navigate(page.route) {
+                popUpTo(AppPage.ENTRY.route) { inclusive = true }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

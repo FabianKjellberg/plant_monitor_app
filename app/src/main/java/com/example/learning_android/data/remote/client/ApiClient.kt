@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.learning_android.data.remote.api.AuthApiService
 import com.example.learning_android.data.remote.api.DeviceApiService
 import com.example.learning_android.data.remote.api.ReadingsApiService
+import com.example.learning_android.data.remote.dto.RefreshResponseDto
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
@@ -24,6 +25,10 @@ object ApiClient {
         cookieJar = PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(ctx))
     }
 
+    fun getContext(): Context {
+        return appContext ?: throw IllegalStateException("ApiClient not initialized!")
+    }
+
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .cookieJar(cookieJar)
@@ -40,15 +45,28 @@ object ApiClient {
             }
 
             .authenticator { _, response ->
-                println("Detected 401 - Attempting Token Refresh")
+                if (response.priorResponse() != null) return@authenticator null
 
-                val refreshTokenResponse = authApiService.refresh().execute();
+                val bootstrapClient = OkHttpClient.Builder()
+                    .cookieJar(cookieJar) // Still use the same cookies!
+                    .build()
 
-                if (refreshTokenResponse.isSuccessful) {
-                    val newAccessToken = refreshTokenResponse.body()?.accessToken
+                val refreshRequest = okhttp3.Request.Builder()
+                    .url("$BASE_URL/auth/refresh")
+                    .post(okhttp3.RequestBody.create(null, ByteArray(0)))
+                    .build()
 
-                    if (newAccessToken != null && appContext != null) {
-                        TokenManager.saveAccessToken(appContext!!, newAccessToken)
+                // 2. Use the bootstrapClient here, NOT okHttpClient
+                val refreshResponse = bootstrapClient.newCall(refreshRequest).execute()
+
+                if (refreshResponse.isSuccessful) {
+                    val bodyString = refreshResponse.body()?.string()
+                    val refreshDto = com.google.gson.Gson().fromJson(bodyString, RefreshResponseDto::class.java)
+                    val newAccessToken = refreshDto?.accessToken
+
+                    val context = appContext
+                    if (newAccessToken != null && context != null) {
+                        TokenManager.saveAccessToken(context, newAccessToken)
 
                         return@authenticator response.request().newBuilder()
                             .header("Authorization", "Bearer $newAccessToken")
