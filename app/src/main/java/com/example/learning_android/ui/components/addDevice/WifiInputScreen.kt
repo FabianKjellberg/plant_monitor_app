@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -35,12 +36,12 @@ fun WifiInputScreen(viewModel: AddDeviceViewModel) {
     status == EspWifiConnectionStatus.BLE_STATUS_SUCCESS
 
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxSize().padding(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
     Text("Enter the Wi-Fi network name and password your device should connect to.")
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(32.dp))
     OutlinedTextField(
       label = { Text("Wi-Fi SSID")},
       value = viewModel.userInputSsid.value,
@@ -54,7 +55,7 @@ fun WifiInputScreen(viewModel: AddDeviceViewModel) {
       onValueChange = {viewModel.userInputPassword.value = it},
       enabled = !isBusy
     )
-
+    Spacer(modifier = Modifier.height(16.dp))
     Button(
       onClick = { viewModel.sendWifiCredentials()},
       enabled = !isBusy

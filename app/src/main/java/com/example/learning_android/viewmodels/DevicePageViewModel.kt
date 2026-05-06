@@ -27,11 +27,16 @@ class DevicePageViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    //update in the future
+   
     private val deviceId: String = checkNotNull(savedStateHandle["deviceId"])
 
-    val device: PotDevice?
-        get() = DeviceRepository.getDeviceById(deviceId)
+    var device by mutableStateOf<PotDevice?>(null)
+        private set
+
+    init {
+        device = DeviceRepository.getDeviceById(deviceId)
+    }
+
     private var readings by mutableStateOf<DeviceReadings?>(null)
     var fromDate by mutableStateOf<Instant>(Instant.now().minus(1, ChronoUnit.DAYS))
         private set
@@ -95,20 +100,19 @@ class DevicePageViewModel(
         }
     }
 
-    fun updateDeviceName(name: String){
+    fun updateDeviceName(name: String) {
         viewModelScope.launch {
             val oldName = device?.deviceName ?: "unknown"
             DeviceRepository.updateDeviceName(deviceId, name)
 
-            val body = UpdateNameRequestDto(
-                name = name,
-                deviceId = deviceId
-            )
+            device = device?.copy(deviceName = name)
 
+            val body = UpdateNameRequestDto(name = name, deviceId = deviceId)
             val response = ApiClient.deviceApiService.changeDeviceName(body)
 
-            if(!response.isSuccessful) {
+            if (!response.isSuccessful) {
                 DeviceRepository.updateDeviceName(deviceId, oldName)
+                device = device?.copy(deviceName = oldName)
             }
         }
     }

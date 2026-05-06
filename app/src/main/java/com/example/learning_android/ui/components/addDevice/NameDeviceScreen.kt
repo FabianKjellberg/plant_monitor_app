@@ -20,19 +20,23 @@ import com.example.learning_android.viewmodels.AddDeviceViewModel
 
 @Composable
 fun NameDeviceScreen(viewModel: AddDeviceViewModel) {
+  val buttonEnabled = !viewModel.namingLoading.value && viewModel.userInputName.value != ""
+
   Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
     Text("What would you like to call this device?")
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(32.dp))
     OutlinedTextField(
       label = { Text("Device name")},
-      value = viewModel.userInputSsid.value,
-      onValueChange = { viewModel.userInputSsid.value = it},
+      value = viewModel.userInputName.value,
+      onValueChange = { viewModel.userInputName.value = it},
       enabled = !viewModel.namingLoading.value
     )
+
+    Spacer(modifier = Modifier.height(16.dp))
 
     Button(
       onClick = { viewModel.createUserDevice(
@@ -40,7 +44,7 @@ fun NameDeviceScreen(viewModel: AddDeviceViewModel) {
           viewModel.updateUiState(AddDeviceState.ROOM_SELECTION)
         }
       )},
-      enabled = !viewModel.namingLoading.value
+      enabled = buttonEnabled
     ) {
       Text("continue")
     }

@@ -154,23 +154,39 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     @SuppressLint("MissingPermission")
+    override fun onDescriptorWrite(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int) {
+      if (status == BluetoothGatt.GATT_SUCCESS) {
+        Log.d("BLE", "Descriptor written! Safe to read MAC now.")
+        val service = gatt.getService(SERVICE_UUID)
+        val macChar = service?.getCharacteristic(MAC_CHAR_UUID)
+        if (macChar != null) {
+          gatt.readCharacteristic(macChar)
+        }
+      }
+    }
+
+    @SuppressLint("MissingPermission")
     override fun onCharacteristicRead(
       gatt: BluetoothGatt,
       characteristic: BluetoothGattCharacteristic,
       status: Int
     ) {
-      if (status == BluetoothGatt.GATT_SUCCESS) {
-        if (characteristic.uuid == MAC_CHAR_UUID) {
-          val mac = characteristic.getStringValue(0)
-
-          Log.d("BLE", "MAC address: $mac")
-
-          viewModelScope.launch(Dispatchers.Main) {
-            macAddr.value = mac
-          }
+      if (status == BluetoothGatt.GATT_SUCCESS && characteristic.uuid == MAC_CHAR_UUID) {
+        // Read the value safely based on API level
+        val macBytes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          characteristic.value // characteristic.value is fine here in the callback
+        } else {
+          @Suppress("DEPRECATION")
+          characteristic.value
         }
-      } else {
-        Log.e("BLE", "Failed to read MAC: $status")
+
+        val macString = macBytes?.let { String(it) } ?: "Unknown"
+
+        Log.d("BLE", "MAC Address received: $macString")
+
+        viewModelScope.launch(Dispatchers.Main) {
+          macAddr.value = macString
+        }
       }
     }
 
@@ -191,6 +207,22 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.Main) {
           wifiConnectionStatus.value =
             EspWifiConnectionStatus.fromCode(statusString)
+        }
+      }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onCharacteristicRead(
+      gatt: BluetoothGatt,
+      characteristic: BluetoothGattCharacteristic,
+      value: ByteArray,
+      status: Int
+    ) {
+      if (status == BluetoothGatt.GATT_SUCCESS && characteristic.uuid == MAC_CHAR_UUID) {
+        val mac = String(value)
+        Log.d("BLE", "MAC Address received (Modern): $mac")
+        viewModelScope.launch(Dispatchers.Main) {
+          macAddr.value = mac
         }
       }
     }
@@ -237,11 +269,11 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
           onSuccess()
         }
         else {
-          Log.e("API", "create user device failed: ${res.message()}")
+          Log.e("API_TEST", "create user device failed: ${res.message()}")
         }
       }
       catch (e: Error) {
-        Log.e("API", "Error: $e")
+        Log.e("API_TEST", "Error: $e")
       }
       finally {
         namingLoading.value = false

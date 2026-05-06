@@ -78,8 +78,7 @@ fun Dashboard (
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 20.dp, bottom = 80.dp)
-                        .padding(horizontal = 12.dp),
+                        .padding(top = 20.dp, bottom = 80.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     AnimatedContent(

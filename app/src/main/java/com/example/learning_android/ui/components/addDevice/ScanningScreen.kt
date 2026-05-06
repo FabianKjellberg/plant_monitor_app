@@ -26,7 +26,7 @@ fun ScanningScreen(viewModel: AddDeviceViewModel) {
     Text("Hold the device button for 5 seconds to start pairing mode.")
     Spacer(modifier = Modifier.height(32.dp))
     Text(text = "Scanning for devices")
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(32.dp))
     CircularProgressIndicator(
       strokeWidth = 8.dp,
       modifier = Modifier.size(80.dp)

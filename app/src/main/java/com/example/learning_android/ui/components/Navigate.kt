@@ -69,7 +69,7 @@ fun AppNavigation() {
         composable( route = AppPage.ADD_DEVICE.route) {
             val viewModel: AddDeviceViewModel = viewModel()
 
-            AddDevice(viewModel)
+            AddDevice(viewModel, navController)
         }
 
         composable( route = AppPage.ADD_PLACE.route) {
