@@ -14,22 +14,25 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.ParcelUuid
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learning_android.domain.model.AddDeviceState
 import com.example.learning_android.domain.model.EspWifiConnectionStatus
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
+import android.Manifest
+import com.example.learning_android.data.remote.client.ApiClient
+import com.example.learning_android.data.remote.dto.CreateUserDeviceDto
+
 
 class AddDeviceViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -44,28 +47,32 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
     val STATUS_CHAR_UUID: UUID = UUID.fromString(STATUS_CHAR_UUID_STRING)
     val MAC_CHAR_UUID: UUID = UUID.fromString(MAC_CHAR_UUID_STRING)
   }
-  private val bluetoothManager = application.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-  private val adapter = bluetoothManager.adapter
-  private val bleScanner = adapter.bluetoothLeScanner
-  private var bluetoothGatt: BluetoothGatt? = null
-
-  var userInputSsid = mutableStateOf("")
-  var userInputPassword = mutableStateOf("")
-
-  var wifiConnectionStatus = mutableStateOf<EspWifiConnectionStatus?>(null)
 
   var uiState by mutableStateOf(AddDeviceState.SCANNING)
     private set
-
-  var deviceProvisioned = mutableStateOf(false);
-
-  var macAddr = mutableStateOf<String?>(null);
 
   fun updateUiState (state: AddDeviceState) {
     uiState = state;
   }
 
+  private val bluetoothManager = application.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+  private val adapter = bluetoothManager.adapter
+  private val bleScanner = adapter.bluetoothLeScanner
+  private var bluetoothGatt: BluetoothGatt? = null
+
   val foundDevice = mutableStateOf<BluetoothDevice?>(null)
+  var macAddr = mutableStateOf<String?>(null);
+
+  var userInputSsid = mutableStateOf("")
+  var userInputPassword = mutableStateOf("")
+  var deviceProvisioned = mutableStateOf(false);
+  var wifiConnectionStatus = mutableStateOf<EspWifiConnectionStatus?>(null)
+
+  var userInputName = mutableStateOf("")
+  var namingErrorText = mutableStateOf("")
+  var namingLoading = mutableStateOf(false)
+
+
 
   private val scanCallback = object : ScanCallback() {
     @SuppressLint("MissingPermission")
@@ -103,11 +110,6 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
   @SuppressLint("MissingPermission")
   fun stopScanning() {
     bleScanner.stopScan(scanCallback)
-  }
-
-  override fun onCleared() {
-    super.onCleared()
-    stopScanning()
   }
 
   private val gattCallback = object : BluetoothGattCallback() {
@@ -180,7 +182,7 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
       if (characteristic.uuid == STATUS_CHAR_UUID) {
         val statusString = characteristic.getStringValue(0) ?: ""
 
-        //if success change screen
+        //provisioning finished
         if(statusString == "1") {
           deviceProvisioned.value = true;
           uiState = AddDeviceState.NAMING
@@ -217,5 +219,50 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
       characteristic.value = data
       bluetoothGatt?.writeCharacteristic(characteristic)
     }
+  }
+
+  fun createUserDevice(onSuccess: () -> Unit) {
+    namingLoading.value = true
+
+    viewModelScope.launch {
+      try {
+        val mac = macAddr.value
+        val name = userInputName.value.trim()
+
+        if(mac == null) return@launch
+
+        val res = ApiClient.deviceApiService.createUserDevice(CreateUserDeviceDto(mac, name))
+
+        if (res.isSuccessful){
+          onSuccess()
+        }
+        else {
+          Log.e("API", "create user device failed: ${res.message()}")
+        }
+      }
+      catch (e: Error) {
+        Log.e("API", "Error: $e")
+      }
+      finally {
+        namingLoading.value = false
+      }
+    }
+  }
+
+  fun hasBluetoothPermission(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      context.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+    } else {
+      context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+  }
+
+  fun isBluetoothEnabled(): Boolean {
+    return adapter?.isEnabled == true
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    stopScanning()
   }
 }

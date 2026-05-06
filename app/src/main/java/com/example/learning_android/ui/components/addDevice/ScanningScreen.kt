@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import com.example.learning_android.viewmodels.AddDeviceViewModel
 
@@ -22,10 +23,10 @@ fun ScanningScreen(viewModel: AddDeviceViewModel) {
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Text("Hold down the button on the device for 5 seconds to be able to be detected by your phone")
-    Spacer(modifier = Modifier.height(16.dp))
+    Text("Hold the device button for 5 seconds to start pairing mode.")
+    Spacer(modifier = Modifier.height(32.dp))
     Text(text = "Scanning for devices")
-
+    Spacer(modifier = Modifier.height(8.dp))
     CircularProgressIndicator(
       strokeWidth = 8.dp,
       modifier = Modifier.size(80.dp)
