@@ -1,10 +1,7 @@
 package com.example.learning_android.ui.screens
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
@@ -20,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -39,7 +38,11 @@ fun Dashboard (
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
-    val nrOfDevices = viewModel.devices?.size?.toString() ?: '-'
+    val deviceHome by viewModel.selectedDeviceHome.collectAsState()
+    val isInitiallyLoading by viewModel.isInitialLoading.collectAsState()
+    val homeId by viewModel.selectedHomeId.collectAsState()
+
+    val nrOfDevices = deviceHome?.devices?.size?.toString() ?: '-'
 
     val deviceText = "Your devices ($nrOfDevices)"
 
@@ -61,7 +64,7 @@ fun Dashboard (
         )
 
         Box(modifier = Modifier.weight(1f)) {
-            if(viewModel.loadingDevices) {
+            if(isInitiallyLoading) {
                 Column(
                     modifier = Modifier.fillMaxSize().padding(bottom = 48.dp),
                     verticalArrangement = Arrangement.Center,
@@ -99,7 +102,7 @@ fun Dashboard (
                         when (targetNav) {
                             DashboardNav.DEVICES ->
                                 DashboardDeviceContent(
-                                    devices = viewModel.devices,
+                                    devices = deviceHome?.devices,
                                     onClickCard = { deviceId ->
                                         navController.navigate("${AppPage.DEVICE_PAGE.route}/${deviceId}")
                                     }
@@ -134,7 +137,7 @@ fun Dashboard (
                 BottomNavBar(
                     onNavClick = { nav -> viewModel.onChangeNav(nav) },
                     nav = viewModel.dashboardNav,
-                    onAddClick = {nav -> navController.navigate(nav.route)}
+                    onAddClick = {nav -> navController.navigate("${nav.route}/${homeId}")}
                 )
             }
         }

@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.domain.model.AppPage
+import com.example.learning_android.repositories.DeviceRepository
+import com.example.learning_android.repositories.HomeRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -43,6 +45,8 @@ class EntryViewModel : ViewModel() {
             try {
                 val res = ApiClient.authApiService.testAuth()
                 if (res.isSuccessful) {
+                    HomeRepository.startAutoRefetch()
+                    DeviceRepository.startAutoRefetch()
                     _navigationEvent.send(AppPage.DASHBOARD)
                 } else {
                     _navigationEvent.send(AppPage.LOGIN)

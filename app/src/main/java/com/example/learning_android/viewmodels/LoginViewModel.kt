@@ -10,6 +10,8 @@ import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.data.remote.client.TokenManager
 import com.example.learning_android.data.remote.dto.LoginRequestDto
 import com.example.learning_android.domain.model.AppPage
+import com.example.learning_android.repositories.DeviceRepository
+import com.example.learning_android.repositories.HomeRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -34,6 +36,10 @@ class LoginViewModel(): ViewModel() {
                 Log.e("API_TEST", "res: ${res}")
                 val accessToken = res.accessToken
                 TokenManager.saveAccessToken(ApiClient.getContext(), accessToken)
+
+                DeviceRepository.startAutoRefetch()
+                HomeRepository.startAutoRefetch()
+
                 _navigationEvent.send(AppPage.DASHBOARD)
             }
             catch (e: Exception) {

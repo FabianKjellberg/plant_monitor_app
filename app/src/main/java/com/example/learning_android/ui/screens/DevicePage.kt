@@ -15,11 +15,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.learning_android.R
 import com.example.learning_android.ui.components.MetricDropDown
@@ -34,6 +37,8 @@ fun DevicePage(
     viewModel: DevicePageViewModel,
     navController: NavController
 ){
+
+    val device by viewModel.device.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -57,12 +62,12 @@ fun DevicePage(
                 )
             }
             Text(
-                text = viewModel.device?.deviceName ?: "Unknown",
+                text = device?.name ?: "Unknown",
                 fontSize = 24.sp,
                 modifier = Modifier.weight(1F)
             )
             DevicePageDropdown(
-                viewModel.device?.deviceName ?: "unknown",
+                device?.name ?: "unknown",
                 onChangeName = { name ->
                     viewModel.updateDeviceName(name)
                 }

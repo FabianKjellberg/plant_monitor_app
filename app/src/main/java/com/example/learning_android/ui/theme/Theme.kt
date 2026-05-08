@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF66BB6A),       // softer green
+    primary = Color(0xFF66BB6A),
     onPrimary = Color.Black,
 
     secondary = Color(0xFF81C784),
@@ -51,7 +51,7 @@ private val LightColorScheme = lightColorScheme(
     surface = Color.White,
     onSurface = Color(0xFF1B5E20),
 
-    surfaceVariant = Color(0xFFE8F5E9),
+    surfaceVariant = Color(0xFFD1E7D2),
     onSurfaceVariant = Color(0xFF2E7D32),
 
     outline = Color(0xFFA5D6A7)

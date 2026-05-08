@@ -15,9 +15,11 @@ import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.data.remote.dto.UpdateNameRequestDto
 import com.example.learning_android.domain.model.ChartEntity
 import com.example.learning_android.domain.model.DeviceReadings
-import com.example.learning_android.domain.model.PotDevice
 import com.example.learning_android.domain.model.ReadingType
 import com.example.learning_android.repositories.DeviceRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -27,15 +29,15 @@ class DevicePageViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-   
     private val deviceId: String = checkNotNull(savedStateHandle["deviceId"])
 
-    var device by mutableStateOf<PotDevice?>(null)
-        private set
-
-    init {
-        device = DeviceRepository.getDeviceById(deviceId)
-    }
+    val device = DeviceRepository.deviceHomes.map { homes ->
+        homes.flatMap { home -> home.devices } . find { device -> device.id == deviceId }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
 
     private var readings by mutableStateOf<DeviceReadings?>(null)
     var fromDate by mutableStateOf<Instant>(Instant.now().minus(1, ChronoUnit.DAYS))
@@ -46,6 +48,10 @@ class DevicePageViewModel(
         private set
 
     var chartValue by mutableStateOf<List<ChartEntity>?>(null)
+
+    init {
+        loadData()
+    }
 
     fun updateReadingType(type: ReadingType) {
         this.readingType = type
@@ -90,7 +96,7 @@ class DevicePageViewModel(
 
                 val response = ApiClient.readingsApiService
                     .getDeviceReadingRange(from, to, deviceId);
-                Log.e("API_TEST", "success")
+                Log.e("API_TEST", "got sensor data")
                 readings = response.toDomain();
 
                 updateChartValues();
@@ -101,18 +107,24 @@ class DevicePageViewModel(
     }
 
     fun updateDeviceName(name: String) {
+        val oldDevice = device.value
+        val oldName = oldDevice?.name ?: return
+
         viewModelScope.launch {
-            val oldName = device?.deviceName ?: "unknown"
             DeviceRepository.updateDeviceName(deviceId, name)
 
-            device = device?.copy(deviceName = name)
+            try {
+                val body = UpdateNameRequestDto(name = name, deviceId = deviceId)
+                val response = ApiClient.deviceApiService.changeDeviceName(body)
 
-            val body = UpdateNameRequestDto(name = name, deviceId = deviceId)
-            val response = ApiClient.deviceApiService.changeDeviceName(body)
-
-            if (!response.isSuccessful) {
+                if (!response.isSuccessful) {
+                    Log.e("API_TEST", "failed updating name, reverting locally: ${response.message()}")
+                    DeviceRepository.updateDeviceName(deviceId, oldName)
+                }
+            }
+            catch (e: Exception) {
+                Log.e("API_TEST", "failed updating name, reverting locally: ${e.message}")
                 DeviceRepository.updateDeviceName(deviceId, oldName)
-                device = device?.copy(deviceName = oldName)
             }
         }
     }

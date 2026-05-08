@@ -48,7 +48,6 @@ fun AppNavigation() {
 
         composable( route = AppPage.DASHBOARD.route) {
             val viewModel = remember { DashboardViewModel() }
-            viewModel.loadDevices();
 
             Dashboard(
                 viewModel = viewModel,
@@ -58,7 +57,6 @@ fun AppNavigation() {
 
         composable( route = "${AppPage.DEVICE_PAGE.route}/{deviceId}" ) {
             val viewModel: DevicePageViewModel = viewModel()
-            viewModel.loadData();
 
             DevicePage(
                 viewModel = viewModel,
@@ -66,13 +64,13 @@ fun AppNavigation() {
             )
         }
 
-        composable( route = AppPage.ADD_DEVICE.route) {
+        composable( route = "${AppPage.ADD_DEVICE.route}/{homeId}") {
             val viewModel: AddDeviceViewModel = viewModel()
 
             AddDevice(viewModel, navController)
         }
 
-        composable( route = AppPage.ADD_PLACE.route) {
+        composable( route = "${AppPage.ADD_PLACE.route}/{homeId}") {
             Text("not created")
         }
     }

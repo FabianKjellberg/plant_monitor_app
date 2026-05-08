@@ -26,14 +26,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.learning_android.R
-import com.example.learning_android.domain.model.PotDevice
+import com.example.learning_android.domain.model.Device
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 @Composable
-fun DeviceCard(device: PotDevice, onClick: () -> Unit) {
+fun DeviceCard(device: Device, onClick: () -> Unit) {
     val batteryPercent = device.batteryPercentage?.roundToInt()
 
     val formattedDate = remember(device.batteryReadAt) {
@@ -105,7 +105,7 @@ fun DeviceCard(device: PotDevice, onClick: () -> Unit) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = device.deviceName,
+                        text = device.name,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(vertical = 4.dp)

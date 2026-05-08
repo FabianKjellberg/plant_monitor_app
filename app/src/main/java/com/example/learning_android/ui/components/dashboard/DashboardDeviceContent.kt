@@ -12,12 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.learning_android.domain.model.PotDevice
+import com.example.learning_android.domain.model.Device
 import com.example.learning_android.ui.components.DeviceCard
 import kotlin.collections.forEach
 
 @Composable
-fun DashboardDeviceContent (devices: List<PotDevice>?, onClickCard: (deviceId: String) -> Unit) {
+fun DashboardDeviceContent (devices: List<Device>?, onClickCard: (deviceId: String) -> Unit) {
     if (devices == null) {
         Text("unable to fetch devices, Check back later or contact support")
     }
@@ -40,7 +40,7 @@ fun DashboardDeviceContent (devices: List<PotDevice>?, onClickCard: (deviceId: S
             devices.forEach { device ->
                 DeviceCard(
                     device = device,
-                    onClick = { onClickCard(device.deviceId) }
+                    onClick = { onClickCard(device.id) }
                 )
             }
         }

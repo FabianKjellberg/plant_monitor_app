@@ -3,6 +3,7 @@ package com.example.learning_android.data.remote.client
 import android.content.Context
 import com.example.learning_android.data.remote.api.AuthApiService
 import com.example.learning_android.data.remote.api.DeviceApiService
+import com.example.learning_android.data.remote.api.HomeApiService
 import com.example.learning_android.data.remote.api.ReadingsApiService
 import com.example.learning_android.data.remote.dto.RefreshResponseDto
 import retrofit2.Retrofit
@@ -12,6 +13,7 @@ import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.franmontiel.persistentcookiejar.ClearableCookieJar
 import okhttp3.OkHttpClient
+import kotlin.getValue
 
 object ApiClient {
 
@@ -48,15 +50,13 @@ object ApiClient {
                 if (response.priorResponse() != null) return@authenticator null
 
                 val bootstrapClient = OkHttpClient.Builder()
-                    .cookieJar(cookieJar) // Still use the same cookies!
+                    .cookieJar(cookieJar)
                     .build()
 
                 val refreshRequest = okhttp3.Request.Builder()
                     .url("$BASE_URL/auth/refresh")
                     .post(okhttp3.RequestBody.create(null, ByteArray(0)))
                     .build()
-
-                // 2. Use the bootstrapClient here, NOT okHttpClient
                 val refreshResponse = bootstrapClient.newCall(refreshRequest).execute()
 
                 if (refreshResponse.isSuccessful) {
@@ -96,5 +96,9 @@ object ApiClient {
 
     val authApiService: AuthApiService by lazy {
         retrofit.create(AuthApiService::class.java)
+    }
+
+    val homeApiService: HomeApiService by lazy {
+        retrofit.create(HomeApiService::class.java)
     }
 }

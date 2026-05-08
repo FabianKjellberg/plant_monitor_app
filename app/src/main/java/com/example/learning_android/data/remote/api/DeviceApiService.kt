@@ -1,7 +1,8 @@
 package com.example.learning_android.data.remote.api
 
+import com.example.learning_android.data.remote.dto.AddDeviceToHomeDto
 import com.example.learning_android.data.remote.dto.CreateUserDeviceDto
-import com.example.learning_android.data.remote.dto.GetDevicesResponseDTO
+import com.example.learning_android.data.remote.dto.GetDevicesResponseDto
 import com.example.learning_android.data.remote.dto.UpdateNameRequestDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -11,7 +12,7 @@ import retrofit2.http.PUT
 
 interface DeviceApiService {
     @GET("device/all")
-    suspend fun getAllDevices (): Response<GetDevicesResponseDTO>
+    suspend fun getAllDevices (): Response<GetDevicesResponseDto>
 
     @PUT("device/name")
     suspend fun changeDeviceName(
@@ -21,5 +22,10 @@ interface DeviceApiService {
     @POST("device/user-device/create")
     suspend fun createUserDevice(
         @Body body: CreateUserDeviceDto
+    ): Response<Unit>
+
+    @PUT("device/home")
+    suspend fun addDeviceToHome(
+        @Body body: AddDeviceToHomeDto
     ): Response<Unit>
 }

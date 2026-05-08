@@ -1,27 +1,30 @@
 package com.example.learning_android.data.mapper
 
-import com.example.learning_android.data.remote.dto.DeviceDTO
-import com.example.learning_android.data.remote.dto.GetDevicesResponseDTO
-import com.example.learning_android.domain.model.PotDevice
+import com.example.learning_android.data.remote.dto.DeviceDto
+import com.example.learning_android.data.remote.dto.GetDevicesResponseDto
+import com.example.learning_android.data.remote.helpers.batteryPercentFromMv
+import com.example.learning_android.domain.model.Device
+import com.example.learning_android.domain.model.DeviceHome
+import com.example.learning_android.domain.model.DeviceType
 import java.time.Instant
 
-private const val OFFSET_MV = 180
-
-fun DeviceDTO.toDomain(): PotDevice{
-    val batteryPercentage = batteryMv?.let { mv ->
-        val corrected = mv + OFFSET_MV
-        ((corrected - 3300f) / (4200f - 3300f))
-            .coerceIn(0f, 1f) * 100f
-    }
-
-    return PotDevice(
-        deviceId = deviceId,
-        deviceName = deviceName ?: "Unnamed Device",
-        batteryPercentage = batteryPercentage,
-        batteryReadAt = batteryReadAt?.let { Instant.parse(batteryReadAt) }
-    )
+fun DeviceDto.toDomain(): Device {
+  return Device(
+    id = id,
+    name = name ?: "Unnamed Device",
+    batteryPercentage = batteryPercentFromMv(batteryMv),
+    batteryReadAt = batteryReadAt?.let { Instant.parse(batteryReadAt) },
+    placeId = placeId,
+    type = DeviceType.fromString(deviceType)
+  )
 }
 
-fun GetDevicesResponseDTO.toDomain(): List<PotDevice>{
-    return devices.map { it.toDomain() }
+fun GetDevicesResponseDto.toDomain(): List<DeviceHome>{
+  return homes.map {
+    DeviceHome(
+      id = it.id,
+      name = it.name,
+      devices = it.devices.map { it.toDomain() }
+    )
+  }
 }

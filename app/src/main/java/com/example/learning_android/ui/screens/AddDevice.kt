@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,14 +21,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.learning_android.R
 import com.example.learning_android.domain.model.AddDeviceState
 import com.example.learning_android.ui.components.addDevice.DeviceFoundScreen
 import com.example.learning_android.ui.components.addDevice.NameDeviceScreen
@@ -90,29 +95,32 @@ fun AddDevice(viewModel: AddDeviceViewModel, navController: NavController) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            Button(
-                onClick = {navController.popBackStack()}
-            ) {
-                Text("X")
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedContent(
+            targetState = viewModel.uiState,
+            transitionSpec = {
+                slideInVertically { it } togetherWith slideOutVertically { -it }
+            }
+        ) { step ->
+            when(step) {
+                AddDeviceState.SCANNING -> ScanningScreen(viewModel)
+                AddDeviceState.DEVICE_FOUND -> DeviceFoundScreen(viewModel)
+                AddDeviceState.WIFI_INPUT -> WifiInputScreen(viewModel)
+                AddDeviceState.NAMING -> NameDeviceScreen(viewModel)
+                AddDeviceState.ROOM_SELECTION -> SelectRoomScreen(viewModel)
+                AddDeviceState.SUCCESS -> SuccessScreen(viewModel)
+                AddDeviceState.PROVISIONING -> ProvisioningScreen(viewModel)
             }
         }
-    }
-    AnimatedContent(
-        targetState = viewModel.uiState,
-        transitionSpec = {
-            slideInVertically { it } togetherWith slideOutVertically { -it }
-        }
-    ) { step ->
-        when(step) {
-            AddDeviceState.SCANNING -> ScanningScreen(viewModel)
-            AddDeviceState.DEVICE_FOUND -> DeviceFoundScreen(viewModel)
-            AddDeviceState.WIFI_INPUT -> WifiInputScreen(viewModel)
-            AddDeviceState.NAMING -> NameDeviceScreen(viewModel)
-            AddDeviceState.ROOM_SELECTION -> SelectRoomScreen(viewModel)
-            AddDeviceState.SUCCESS -> SuccessScreen(viewModel)
-            AddDeviceState.PROVISIONING -> ProvisioningScreen(viewModel)
+
+        IconButton(
+            modifier = Modifier.padding(vertical = 24.dp, horizontal = 4.dp).align(Alignment.TopEnd),
+            onClick = { navController.popBackStack()}
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_x_smaller),
+                contentDescription = "go-back"
+            )
         }
     }
 }

@@ -30,11 +30,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.UUID
 import android.Manifest
+import androidx.lifecycle.SavedStateHandle
 import com.example.learning_android.data.remote.client.ApiClient
+import com.example.learning_android.data.remote.dto.AddDeviceToHomeDto
 import com.example.learning_android.data.remote.dto.CreateUserDeviceDto
 
 
-class AddDeviceViewModel(application: Application) : AndroidViewModel(application) {
+class AddDeviceViewModel(
+  application: Application,
+  private val savedStateHandle: SavedStateHandle
+) : AndroidViewModel(application) {
+
+  private val homeId: String = checkNotNull(savedStateHandle["homeId"])
 
   companion object {
     private const val SERVICE_UUID_STRING = "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
@@ -71,6 +78,8 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
   var userInputName = mutableStateOf("")
   var namingErrorText = mutableStateOf("")
   var namingLoading = mutableStateOf(false)
+
+  var userInputPlaceId = mutableStateOf<String?>(null)
 
 
 
@@ -260,10 +269,11 @@ class AddDeviceViewModel(application: Application) : AndroidViewModel(applicatio
       try {
         val mac = macAddr.value
         val name = userInputName.value.trim()
+        val placeId = userInputPlaceId.value
 
         if(mac == null) return@launch
 
-        val res = ApiClient.deviceApiService.createUserDevice(CreateUserDeviceDto(mac, name))
+        val res = ApiClient.deviceApiService.addDeviceToHome(AddDeviceToHomeDto(mac, name, homeId, placeId ))
 
         if (res.isSuccessful){
           onSuccess()
