@@ -48,7 +48,7 @@ object HomeRepository {
       _homes.value = res.homes.map { it.toDomain() }
     }
     catch (e: Exception){
-      Log.e("API_TEST", "unable to fetch homes")
+      Log.e("API_TEST", "unable to fetch homes ${e.message}")
     }
     finally {
       _isRefetching.value = false

@@ -9,11 +9,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.learning_android.domain.model.AppPage
 import com.example.learning_android.ui.screens.AddDevice
+import com.example.learning_android.ui.screens.AddPlace
 import com.example.learning_android.ui.screens.Dashboard
 import com.example.learning_android.ui.screens.DevicePage
 import com.example.learning_android.ui.screens.Entry
 import com.example.learning_android.ui.screens.Login
 import com.example.learning_android.viewmodels.AddDeviceViewModel
+import com.example.learning_android.viewmodels.AddPlaceViewModel
 import com.example.learning_android.viewmodels.DashboardViewModel
 import com.example.learning_android.viewmodels.DevicePageViewModel
 import com.example.learning_android.viewmodels.EntryViewModel
@@ -71,7 +73,9 @@ fun AppNavigation() {
         }
 
         composable( route = "${AppPage.ADD_PLACE.route}/{homeId}") {
-            Text("not created")
+            val viewModel: AddPlaceViewModel = viewModel()
+
+            AddPlace(viewModel, navController)
         }
     }
 }

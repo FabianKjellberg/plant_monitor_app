@@ -53,6 +53,8 @@ fun Dashboard (
         DashboardNav.PLACES -> placesText
     }
 
+    val repeatedDevices = List(10) { deviceHome?.devices ?: emptyList() }.flatten()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -81,7 +83,7 @@ fun Dashboard (
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 20.dp, bottom = 80.dp),
+                        .padding(top = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     AnimatedContent(
@@ -102,7 +104,7 @@ fun Dashboard (
                         when (targetNav) {
                             DashboardNav.DEVICES ->
                                 DashboardDeviceContent(
-                                    devices = deviceHome?.devices,
+                                    devices = repeatedDevices,
                                     onClickCard = { deviceId ->
                                         navController.navigate("${AppPage.DEVICE_PAGE.route}/${deviceId}")
                                     }
@@ -112,32 +114,18 @@ fun Dashboard (
                     }
 
                 }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(20.dp)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.background,
-                                    Color.Transparent
-                                )
-                            )
-                        )
-                )
             }
 
 
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.Bottom
-
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
             ) {
                 BottomNavBar(
                     onNavClick = { nav -> viewModel.onChangeNav(nav) },
                     nav = viewModel.dashboardNav,
-                    onAddClick = {nav -> navController.navigate("${nav.route}/${homeId}")}
+                    onAddClick = { nav -> navController.navigate("${nav.route}/${homeId}") }
                 )
             }
         }

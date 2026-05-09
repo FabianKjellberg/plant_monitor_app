@@ -51,7 +51,7 @@ fun BatteryPill(percentage: Int?, modifier: Modifier = Modifier) {
                 .width(34.dp)
                 .height(18.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.onSurface)
                 .padding(2.dp),
             contentAlignment = Alignment.Center,
         ) {
@@ -74,14 +74,14 @@ fun BatteryPill(percentage: Int?, modifier: Modifier = Modifier) {
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp
                 ),
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.background,
             )
         }
         Box(
             modifier = Modifier
                 .size(width = 3.dp, height = 8.dp)
                 .clip(RoundedCornerShape(topEnd = 2.dp, bottomEnd = 2.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.onSurface)
         )
     }
 }

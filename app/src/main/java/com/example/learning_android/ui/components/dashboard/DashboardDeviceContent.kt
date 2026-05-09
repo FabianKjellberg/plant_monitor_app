@@ -2,7 +2,9 @@ package com.example.learning_android.ui.components.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +38,7 @@ fun DashboardDeviceContent (devices: List<Device>?, onClickCard: (deviceId: Stri
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             devices.forEach { device ->
                 DeviceCard(
@@ -43,6 +46,7 @@ fun DashboardDeviceContent (devices: List<Device>?, onClickCard: (deviceId: Stri
                     onClick = { onClickCard(device.id) }
                 )
             }
+            Spacer(Modifier.height(64.dp))
         }
 
     }

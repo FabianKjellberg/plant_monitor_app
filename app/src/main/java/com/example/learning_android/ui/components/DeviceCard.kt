@@ -21,9 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.learning_android.R
 import com.example.learning_android.domain.model.Device
@@ -35,6 +38,7 @@ import kotlin.math.roundToInt
 @Composable
 fun DeviceCard(device: Device, onClick: () -> Unit) {
     val batteryPercent = device.batteryPercentage?.roundToInt()
+    val colorScheme = MaterialTheme.colorScheme
 
     val formattedDate = remember(device.batteryReadAt) {
         val instant = device.batteryReadAt ?: return@remember "Never"
@@ -57,72 +61,67 @@ fun DeviceCard(device: Device, onClick: () -> Unit) {
         }
     }
 
-    ElevatedCard(
-        shape = RoundedCornerShape(36.dp),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 8.dp
-        ),
+    Box(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorScheme.surfaceVariant,
+                        colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    )
+                )
+            )
             .clickable { onClick() }
     ) {
-        Box(
+        // Background Image Decoration
+        Image(
+            painter = painterResource(id = R.drawable.ic_pot_device),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .size(160.dp)
+                .padding(end = 8.dp)
+                .graphicsLayer(
+                    alpha = 0.15f,
+                    scaleX = 1.2f,
+                    scaleY = 1.2f,
+                    rotationZ = -15f
+                )
+        )
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+                .height(140.dp)
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
             ) {
-                Column(
-                    modifier = Modifier.weight(0.4F).padding(end = 20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Box(
-                            modifier = Modifier.size(120.dp).background(brush = Brush.radialGradient(
-                                colors = listOf(
-                                    Color.Green.copy(alpha = 0.4F),
-                                    Color.Transparent,
-                                )
-                            )
-                            )
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_pot_device),
-                            contentDescription = "PotDevice",
-                            modifier = Modifier.padding(25.dp)
-                        )
-                    }
-                }
-                Column(
-                    modifier = Modifier.fillMaxHeight().weight(0.6F),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = device.name,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                Text(
+                    text = device.name,
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onSurface
                     )
+                )
 
-                    Text(
-                        text = "Last reading: $formattedDate",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                Text(
+                    text = "Last reading: $formattedDate",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = colorScheme.onSurfaceVariant
                     )
-                }
+                )
             }
-            Row(
-                modifier = Modifier.align(Alignment.TopEnd).padding(20.dp)
-            ) {
-                BatteryPill(batteryPercent)
-            }
+        }
+
+        Box(modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)) {
+            BatteryPill(batteryPercent)
         }
     }
 }

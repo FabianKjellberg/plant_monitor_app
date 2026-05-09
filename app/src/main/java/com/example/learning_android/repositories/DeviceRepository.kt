@@ -46,11 +46,13 @@ object DeviceRepository {
     try {
       val res = ApiClient.deviceApiService.getAllDevices()
 
+
+
       if(res.isSuccessful) {
         _deviceHomes.value = res.body()?.toDomain() ?: emptyList()
       }
       else {
-        Log.e("API_TEST", "unable to fetch device homes")
+        Log.e("API_TEST", "unable to fetch device homes ${res.message()}")
       }
     }
     catch (e: Exception) {
