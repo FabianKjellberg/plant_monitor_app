@@ -7,6 +7,7 @@ enum class AppPage(val route: String) {
   DASHBOARD("dashboard"),
   LOGIN("login"),
   REGISTER("register"),
-  DEVICE_PAGE("device_page")
-
+  DEVICE_PAGE("device_page"),
+  ROOM_PAGE("room_page"),
+  PLACE_PAGE("place_page"),
 }

@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.learning_android.domain.model.Device
-import com.example.learning_android.ui.components.DeviceCard
 import kotlin.collections.forEach
 
 @Composable

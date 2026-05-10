@@ -5,6 +5,7 @@ import com.example.learning_android.data.remote.dto.CreatePlaceResponseDto
 import com.example.learning_android.data.remote.dto.CreateRoomRequestDto
 import com.example.learning_android.data.remote.dto.CreateRoomResponseDto
 import com.example.learning_android.data.remote.dto.GetHomeResponseDto
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -16,10 +17,10 @@ interface HomeApiService {
   @POST("home/room/create")
   suspend fun createRoom (
     @Body body: CreateRoomRequestDto
-  ): CreateRoomResponseDto
+  ): Response<CreateRoomResponseDto>
 
   @POST("home/place/create")
   suspend fun createPlace (
     @Body body: CreatePlaceRequestDto
-  ): CreatePlaceResponseDto
+  ): Response<CreatePlaceResponseDto>
 }

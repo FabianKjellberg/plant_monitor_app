@@ -180,7 +180,6 @@
                         modifier = Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         Column(
                             modifier = Modifier
                                 .weight(1f)
@@ -189,10 +188,10 @@
                             verticalArrangement = Arrangement.Center
                         ) {
                             NavItem(
-                                label = "Devices",
-                                isSelected = nav == DashboardNav.DEVICES,
-                                onClick = { onNavClick(DashboardNav.DEVICES)},
-                                painter = painterResource(id = R.drawable.ic_device_nav_icon)
+                                label = "Places",
+                                isSelected = nav == DashboardNav.PLACES,
+                                onClick = { onNavClick(DashboardNav.PLACES)},
+                                painter = painterResource(R.drawable.ic_places_nav_icon)
                             )
                         }
 
@@ -206,10 +205,10 @@
                             verticalArrangement = Arrangement.Center
                         ) {
                             NavItem(
-                                label = "Places",
-                                isSelected = nav == DashboardNav.PLACES,
-                                onClick = { onNavClick(DashboardNav.PLACES)},
-                                painter = painterResource(R.drawable.ic_places_nav_icon)
+                                label = "Devices",
+                                isSelected = nav == DashboardNav.DEVICES,
+                                onClick = { onNavClick(DashboardNav.DEVICES)},
+                                painter = painterResource(id = R.drawable.ic_device_nav_icon)
                             )
                         }
                     }

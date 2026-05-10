@@ -1,5 +1,7 @@
 package com.example.learning_android.ui.screens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,8 +50,11 @@ import com.example.learning_android.domain.model.SelectionState
 import com.example.learning_android.ui.components.SelectionCard
 import com.example.learning_android.viewmodels.AddPlaceViewModel
 import androidx.compose.ui.text.input.ImeAction
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.learning_android.repositories.HomeRepository
 import com.example.learning_android.repositories.IconResource
 import com.example.learning_android.ui.components.IconPreviewButton
+import com.example.learning_android.ui.components.RoomDropDownMenu
 import kotlinx.coroutines.launch
 
 enum class SelectedCard {
@@ -86,6 +91,20 @@ fun AddPlace(
   val sheetState = rememberModalBottomSheetState()
   var showIconSheet by remember { mutableStateOf(false) }
 
+  val addRoomButtonEnabled =
+    !viewModel.busy &&
+    viewModel.userInputRoomName != ""
+  val addPlaceButtonEnabled =
+    !viewModel.busy &&
+    viewModel.userInputPlaceName != "" &&
+    viewModel.selectedRoom != null
+
+  val rooms = viewModel.rooms.collectAsStateWithLifecycle()
+
+  val onDismissEnabled =
+    !viewModel.busy && selectedCard != SelectedCard.NONE
+
+
   Scaffold(
     snackbarHost = {
       Box(modifier = Modifier
@@ -110,6 +129,12 @@ fun AddPlace(
       .padding(20.dp)
       .padding(top = 0.dp)
       .padding(paddingValues)
+      .clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        enabled = onDismissEnabled,
+        onClick = { selectedCard = SelectedCard.NONE }
+      )
     ) {
       Row(
         modifier = Modifier.padding(bottom = 20.dp),
@@ -135,7 +160,7 @@ fun AddPlace(
         title = "Add a room",
         subtitle = "Create a space to organize your home, like a kitchen or living room.",
         state = addRoomState,
-        enabled = true,
+        enabled = !viewModel.busy,
       ){
         Column(modifier = Modifier.fillMaxWidth()) {
           Row(
@@ -165,17 +190,17 @@ fun AddPlace(
           Spacer(Modifier.height(8.dp))
           Button(
             onClick = {
-              val name = viewModel.userInputRoomName;
-              selectedCard = SelectedCard.NONE
-              scope.launch {
-                snackbarHostState.showSnackbar(
-                  message = "${name} added to your home",
-                  duration = SnackbarDuration.Short
-                )
+              viewModel.addRoom { roomName ->
+                selectedCard = SelectedCard.NONE
+                scope.launch {
+                  snackbarHostState.showSnackbar(
+                    message = "${roomName} added to your home",
+                    duration = SnackbarDuration.Short
+                  )
+                }
               }
-              viewModel.userInputRoomName = ""
             },
-            enabled = viewModel.userInputRoomName != ""
+            enabled = addRoomButtonEnabled
           ) {
             Text("Add room")
           }
@@ -187,22 +212,28 @@ fun AddPlace(
         title = "Add a place",
         subtitle = "Define specific spots within a room to monitor, like a window or shelf.",
         state = addPlaceState,
-        enabled = true,
+        enabled = !viewModel.busy,
       ){
         Column(modifier = Modifier.fillMaxWidth()) {
+          RoomDropDownMenu(
+            rooms = rooms.value,
+            selectedRoom = viewModel.selectedRoom,
+            onSelect = { room -> viewModel.selectedRoom = room }
+          )
+          Spacer(Modifier.height(4.dp))
           Row(
             modifier = Modifier.fillMaxWidth(),
           ) {
             IconPreviewButton(
               modifier = Modifier.padding(top = 8.dp),
               onClick = { showIconSheet = true },
-              selectedIconId = viewModel.userInputRoomIconId
+              selectedIconId = viewModel.userInputPlaceIconId
             )
             Spacer(Modifier.width(8.dp))
             OutlinedTextField(
-              label = {Text("Room name")},
-              value = viewModel.userInputRoomName,
-              onValueChange = { viewModel.userInputRoomName = it},
+              label = {Text("Place name")},
+              value = viewModel.userInputPlaceName,
+              onValueChange = { viewModel.userInputPlaceName = it},
               singleLine = true,
               keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
@@ -217,19 +248,19 @@ fun AddPlace(
           Spacer(Modifier.height(8.dp))
           Button(
             onClick = {
-              val name = viewModel.userInputRoomName;
-              selectedCard = SelectedCard.NONE
-              scope.launch {
-                snackbarHostState.showSnackbar(
-                  message = "${name} added to your home",
-                  duration = SnackbarDuration.Short
-                )
+              viewModel.addPlace { placeName ->
+                selectedCard = SelectedCard.NONE
+                scope.launch {
+                  snackbarHostState.showSnackbar(
+                    message = "${placeName} added to your home",
+                    duration = SnackbarDuration.Short
+                  )
+                }
               }
-              viewModel.userInputRoomName = ""
             },
-            enabled = viewModel.userInputRoomName != ""
+            enabled = addPlaceButtonEnabled
           ) {
-            Text("Add room")
+            Text("Add Place")
           }
         }
       }
@@ -239,7 +270,7 @@ fun AddPlace(
     ModalBottomSheet(
       onDismissRequest = { showIconSheet = false },
       sheetState = sheetState,
-      containerColor = MaterialTheme.colorScheme.surfaceContainerLow 
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
       LazyVerticalGrid(
         columns = GridCells.Fixed(4),

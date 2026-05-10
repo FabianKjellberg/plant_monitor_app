@@ -49,6 +49,8 @@ object DeviceRepository {
 
 
       if(res.isSuccessful) {
+        Log.e("API_TEST", "deviceHome body ${res.body()}")
+
         _deviceHomes.value = res.body()?.toDomain() ?: emptyList()
       }
       else {
