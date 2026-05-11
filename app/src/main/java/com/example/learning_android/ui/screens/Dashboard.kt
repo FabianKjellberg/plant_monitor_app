@@ -114,10 +114,10 @@ fun Dashboard (
                 DashboardPlacesContent(
                   home = home,
                   onClickRoomCard = { roomId ->
-                    navController.navigate("${AppPage.ROOM_PAGE.route}/${homeId}/${roomId}")
+                    navController.navigate("${AppPage.ROOM_PAGE.route}/${roomId}")
                   },
                   onClickPlaceCard = { placeId ->
-                    navController.navigate("${AppPage.PLACE_PAGE.route}/${homeId}/${placeId}")
+                    navController.navigate("${AppPage.PLACE_PAGE.route}/${placeId}")
                   }
                 )
             }

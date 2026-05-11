@@ -70,7 +70,7 @@ fun AppNavigation() {
             )
         }
 
-        composable ( route = "${AppPage.ROOM_PAGE.route}/{homeId}/{roomId}") {
+        composable ( route = "${AppPage.ROOM_PAGE.route}/{roomId}") {
             val viewModel: RoomPageViewModel = viewModel()
 
             RoomPage(
@@ -79,7 +79,7 @@ fun AppNavigation() {
             )
         }
 
-        composable ( route = "${AppPage.PLACE_PAGE.route}/{homeId}/{placeId}") {
+        composable ( route = "${AppPage.PLACE_PAGE.route}/{placeId}") {
             val viewModel: PlacePageViewModel = viewModel()
 
             PlacePage(

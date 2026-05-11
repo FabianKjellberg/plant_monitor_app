@@ -3,15 +3,21 @@ package com.example.learning_android.repositories
 import android.util.Log
 import com.example.learning_android.data.mapper.toDomain
 import com.example.learning_android.data.remote.client.ApiClient
+import com.example.learning_android.domain.model.Device
 import com.example.learning_android.domain.model.DeviceHome
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMap
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -76,5 +82,20 @@ object DeviceRepository {
     }
 
     _deviceHomes.value = updatedList;
+  }
+
+  fun getDeviceFromId(id: String): Flow<Device?> {
+    return _deviceHomes.map { homeList ->
+      homeList.flatMap { home -> home.devices }
+        .find { device -> device.id == id}
+    }.distinctUntilChanged()
+  }
+
+  fun getHomeIdFromDevice(deviceId: String): Flow<String?> {
+    return _deviceHomes.map { homeList ->
+      homeList.find { home ->
+        home.devices.any { device -> device.id == deviceId }
+      }?.id
+    }.distinctUntilChanged()
   }
 }

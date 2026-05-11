@@ -62,6 +62,7 @@ class AddPlaceViewModel(
           onSuccess(res.body()?.room?.name ?: "")
           userInputRoomIconId = null
           userInputRoomName = ""
+          HomeRepository.refetchHome()
         }
         else {
          Log.e("API_TEST", "failed creating room: ${homeId}")
@@ -95,6 +96,7 @@ class AddPlaceViewModel(
           selectedRoom = null
           userInputPlaceName = ""
           userInputPlaceIconId = null
+          HomeRepository.refetchHome()
         }
         else {
           Log.e("API_TEST", "failed creating room: ${homeId}")

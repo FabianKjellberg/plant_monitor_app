@@ -10,9 +10,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -52,6 +54,12 @@ object HomeRepository {
     }
     finally {
       _isRefetching.value = false
+    }
+  }
+
+  fun getHomeFromId(homeId: String): Flow<DetailedHome?> {
+    return _homes.map { homeList ->
+      homeList.find { home -> home.id == homeId }
     }
   }
 }
