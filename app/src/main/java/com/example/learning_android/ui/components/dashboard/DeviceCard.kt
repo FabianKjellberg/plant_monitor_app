@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun DeviceCard(device: Device, onClick: () -> Unit) {
-  val batteryPercent = device.batteryPercentage?.roundToInt()
+  val batteryPercent = device.batteryPercentage
   val colorScheme = MaterialTheme.colorScheme
 
   val formattedDate = remember(device.batteryReadAt) {

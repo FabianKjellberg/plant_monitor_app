@@ -32,7 +32,7 @@ class DevicePageViewModel(
     private val deviceId: String = checkNotNull(savedStateHandle["deviceId"])
 
     val device = DeviceRepository.deviceHomes.map { homes ->
-        homes.flatMap { home -> home.devices } . find { device -> device.id == deviceId }
+        homes.flatMap { home -> home.devices }.find { device -> device.id == deviceId }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -74,7 +74,7 @@ class DevicePageViewModel(
         chartValue = currentReadings.map { reading ->
             val value = when (readingType) {
                 ReadingType.LUX -> reading.lux ?: 0F
-                ReadingType.BATTERY_PERCENTAGE -> reading.batteryMv ?: 0F
+                ReadingType.BATTERY_PERCENTAGE -> reading.batteryPercent?.toFloat() ?: 0F
                 ReadingType.HUMIDITY -> reading.humidity ?: 0F
                 ReadingType.PRESSURE -> reading.pressure ?: 0F
                 ReadingType.TEMPERATURE -> reading.temperature ?: 0F

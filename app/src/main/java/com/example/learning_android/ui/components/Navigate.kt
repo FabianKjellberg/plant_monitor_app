@@ -14,12 +14,17 @@ import com.example.learning_android.ui.screens.Dashboard
 import com.example.learning_android.ui.screens.DevicePage
 import com.example.learning_android.ui.screens.Entry
 import com.example.learning_android.ui.screens.Login
+import com.example.learning_android.ui.screens.PlacePage
+import com.example.learning_android.ui.screens.RoomPage
 import com.example.learning_android.viewmodels.AddDeviceViewModel
 import com.example.learning_android.viewmodels.AddPlaceViewModel
 import com.example.learning_android.viewmodels.DashboardViewModel
 import com.example.learning_android.viewmodels.DevicePageViewModel
 import com.example.learning_android.viewmodels.EntryViewModel
 import com.example.learning_android.viewmodels.LoginViewModel
+import com.example.learning_android.viewmodels.PlacePageViewModel
+import com.example.learning_android.viewmodels.RoomPageViewModel
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -32,7 +37,6 @@ fun AppNavigation() {
             val viewModel = remember {
                 EntryViewModel()
             }
-
             Entry(
                 viewModel = viewModel,
                 navController = navController
@@ -61,6 +65,24 @@ fun AppNavigation() {
             val viewModel: DevicePageViewModel = viewModel()
 
             DevicePage(
+                viewModel = viewModel,
+                navController = navController
+            )
+        }
+
+        composable ( route = "${AppPage.ROOM_PAGE.route}/{homeId}/{roomId}") {
+            val viewModel: RoomPageViewModel = viewModel()
+
+            RoomPage(
+                viewModel = viewModel,
+                navController = navController
+            )
+        }
+
+        composable ( route = "${AppPage.PLACE_PAGE.route}/{homeId}/{placeId}") {
+            val viewModel: PlacePageViewModel = viewModel()
+
+            PlacePage(
                 viewModel = viewModel,
                 navController = navController
             )

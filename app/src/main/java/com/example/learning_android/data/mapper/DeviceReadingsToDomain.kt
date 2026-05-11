@@ -14,7 +14,7 @@ fun DeviceReadingDto.toDomain(): DeviceReading {
         pressure = pressure,
         humidity = humidity,
         temperature = temperature,
-        batteryMv = batteryPercentFromMv(batteryMv),
+        batteryPercent = batteryPercentFromMv(batteryMv),
         readAt = Instant.parse(readAt)
     )
 }
