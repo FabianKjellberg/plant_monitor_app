@@ -10,7 +10,7 @@ import java.time.Instant
 
 fun DeviceReadingDto.toDomain(): DeviceReading {
     return DeviceReading(
-        lux = lux?.coerceAtMost(2000.0F),
+        lux = lux,
         pressure = pressure,
         humidity = humidity,
         temperature = temperature,

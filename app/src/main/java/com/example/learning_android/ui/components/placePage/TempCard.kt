@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.learning_android.domain.model.place.PlaceDataManager
-import kotlinx.coroutines.flow.StateFlow
-import java.time.format.TextStyle
 
 @Composable
 fun TempCard(

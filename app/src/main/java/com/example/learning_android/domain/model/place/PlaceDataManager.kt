@@ -1,5 +1,6 @@
 package com.example.learning_android.domain.model.place
 
+import android.util.Log
 import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.data.remote.helpers.averageOrNull
 import com.example.learning_android.domain.model.DeviceReading
@@ -66,6 +67,40 @@ class PlaceDataManager(
       initialValue = 0F,
     )
 
+  val averageDli: StateFlow<Float> =
+    _buckets.mapLatest { buckets ->
+      buckets.map { bucket ->
+        bucket.light.dli
+      }.averageOrNull() ?: 0F
+    }.stateIn(
+      scope = scope,
+      started = SharingStarted.WhileSubscribed(5000),
+      initialValue = 0F
+    )
+
+  val averagePeakPpfd: StateFlow<Float> =
+    _buckets.mapLatest { buckets ->
+      buckets.map { bucket ->
+        bucket.light.peakPpfd
+      }.averageOrNull() ?: 0F
+    }.stateIn(
+      scope = scope,
+      started = SharingStarted.WhileSubscribed(5000),
+      initialValue = 0F
+    )
+
+    val monthlyCoverage: StateFlow<Map<Int, Int>> = _buckets.mapLatest { bucket ->
+      bucket.groupBy { readings ->
+        readings.date.monthValue }.mapValues { (_, daysInMonth) ->
+          daysInMonth.size
+      }
+    }.stateIn(
+      scope = scope,
+      started = SharingStarted.WhileSubscribed(5000),
+      initialValue = emptyMap()
+    )
+
+
   suspend fun syncData(readings: List<DeviceReading>) {
     val zone = ZoneId.systemDefault()
 
@@ -86,9 +121,26 @@ class PlaceDataManager(
 
       val avgLux = dailyReadings.map { reading -> reading.lux }.averageOrNull()
 
+      val luxToPpfdFactor = 0.0185f
+      val sensorFactor = 1.5F
+      val secondsBetweenReadings = 300f
+
+      val totalMicromoles = dailyReadings.sumOf { reading ->
+        val luxValue = reading.lux ?: 0F
+
+        (luxValue * luxToPpfdFactor * secondsBetweenReadings * sensorFactor).toDouble()
+      }
+
+      val dli = (totalMicromoles / 1_000_000).toFloat()
+
+      val dailyMaxLux = dailyReadings.mapNotNull { it.lux }.maxOrNull() ?: 0f
+      val peakPpfd = dailyMaxLux * sensorFactor* luxToPpfdFactor
+
       DailyMetric(
         light = DailyMetricLight(
-          avgLux ?: 0F
+          avgLux ?: 0F,
+          dli,
+          peakPpfd
         ),
         temp = DailyMetricTemp(
           avgTemp ?: 0F,
@@ -98,13 +150,16 @@ class PlaceDataManager(
         humidity = DailyMetricHumidity(
           avgHumidity ?: 0F
         ),
-        date = date
+        date = date,
+        totalReadings = dailyReadings.size
       )
 
     }
-
-    _buckets.value = (_buckets.value + newBuckets).distinctBy { it.date }
     //api call here :)
+
+    val filteredNew = newBuckets.filter { it.totalReadings > 200 }
+    _buckets.value = (_buckets.value + filteredNew).distinctBy { it.date }
+
   }
 }
 

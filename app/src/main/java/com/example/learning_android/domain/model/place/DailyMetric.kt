@@ -6,7 +6,8 @@ data class DailyMetric(
   val temp: DailyMetricTemp,
   val humidity: DailyMetricHumidity,
   val light: DailyMetricLight,
-  val date: LocalDate
+  val date: LocalDate,
+  val totalReadings: Int
 )
 
 data class DailyMetricTemp(
@@ -21,4 +22,6 @@ data class DailyMetricHumidity(
 
 data class DailyMetricLight(
   val avgLux: Float,
+  val dli: Float,
+  val peakPpfd: Float,
 )

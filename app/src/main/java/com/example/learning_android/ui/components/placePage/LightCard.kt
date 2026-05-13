@@ -4,14 +4,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,9 +27,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.learning_android.domain.model.place.PlaceDataManager
 
 @Composable
-fun LightCard() {
+fun LightCard(
+  manager: PlaceDataManager?,
+  modifier: Modifier = Modifier
+) {
+
+  val dli by manager?.averageDli?.collectAsStateWithLifecycle()
+    ?: remember { mutableStateOf(0F) }
+  val peakPpfd by manager?.averagePeakPpfd?.collectAsStateWithLifecycle()
+    ?: remember { mutableStateOf(0f) }
 
   val lightGradient = radialGradient(
     colors = listOf(
@@ -35,16 +50,23 @@ fun LightCard() {
     radius = 2000f
   )
 
-  Box(modifier = Modifier
-    .fillMaxWidth()
-    .clip(RoundedCornerShape(24.dp))
-    .background(lightGradient)
-    .padding(12.dp)
-    .height(140.dp)
-  ){
+  val (heroText, description) = when {
+    dli >= 20f -> "Full Sun" to "Desert-like conditions"
+    dli >= 12f -> "Bright Light" to "Perfect for succulents"
+    dli >= 5f -> "Partial Shade" to "Good for Monsteras"
+    else -> "Low Light" to "Needs grow lights to thrive"
+  }
+
+  Box(
+    modifier = modifier
+      .fillMaxWidth()
+      .height(160.dp)
+      .clip(RoundedCornerShape(24.dp))
+      .background(lightGradient)
+      .padding(16.dp)
+  ) {
     Column(
-      Modifier.fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.SpaceBetween
     ) {
       Text(
@@ -52,7 +74,65 @@ fun LightCard() {
         fontSize = 12.sp,
         color = Color.Black.copy(alpha = 0.5f),
         fontWeight = FontWeight.Bold,
+        modifier = Modifier.align(Alignment.CenterHorizontally)
       )
+
+      Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        Text(
+          text = heroText,
+          fontSize = 28.sp,
+          fontWeight = FontWeight.ExtraBold,
+          color = Color.Black.copy(alpha = 0.8f)
+        )
+        Text(
+          text = description,
+          fontSize = 14.sp,
+          fontWeight = FontWeight.Medium,
+          color = Color.Black.copy(alpha = 0.6f)
+        )
+      }
+
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(
+            text = "AVG DAILY DOSE",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black.copy(alpha = 0.4f)
+          )
+          Text(
+            text = "${"%.1f".format(dli)} mol",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black.copy(alpha = 0.7f)
+          )
+        }
+
+        Box(modifier = Modifier.width(1.dp).height(20.dp).background(Color.Black.copy(0.1f)))
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(
+            text = "AVG TOP PEAK",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black.copy(alpha = 0.4f)
+          )
+          Text(
+            text = "${peakPpfd.toInt()} μmol",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black.copy(alpha = 0.7f)
+          )
+        }
+      }
     }
   }
 }
