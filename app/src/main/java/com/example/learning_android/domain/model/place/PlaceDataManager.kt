@@ -47,7 +47,7 @@ class PlaceDataManager(
   val averageTemp: StateFlow<Float?> =
     _filteredBucket.mapLatest { buckets ->
       buckets.map { bucket ->
-        bucket.temp.avgTemp
+        bucket.avgTemp
       }.averageOrNull()
     }.stateIn(
       scope = scope,
@@ -58,7 +58,7 @@ class PlaceDataManager(
   val minTemp: StateFlow<Float?> =
     _filteredBucket.mapLatest { buckets ->
       buckets.minOfOrNull { bucket ->
-        bucket.temp.minTemp
+        bucket.minTemp
       }
     }.stateIn(
       scope = scope,
@@ -69,7 +69,7 @@ class PlaceDataManager(
   val maxTemp: StateFlow<Float?> =
     _filteredBucket.mapLatest { buckets ->
       buckets.maxOfOrNull { bucket ->
-        bucket.temp.maxTemp
+        bucket.maxTemp
       }
     }.stateIn(
       scope = scope,
@@ -80,7 +80,7 @@ class PlaceDataManager(
   val averageHumidity: StateFlow<Float?> =
     _filteredBucket.mapLatest { buckets ->
       buckets.map { bucket ->
-        bucket.humidity.avgHumidity
+        bucket.avgHumidity
       }.averageOrNull()
     }.stateIn(
       scope = scope,
@@ -91,7 +91,7 @@ class PlaceDataManager(
   val averageDli: StateFlow<Float?> =
     _filteredBucket.mapLatest { buckets ->
       buckets.map { bucket ->
-        bucket.light.dli
+        bucket.dli
       }.averageOrNull()
     }.stateIn(
       scope = scope,
@@ -102,7 +102,7 @@ class PlaceDataManager(
   val averagePeakPpfd: StateFlow<Float?> =
     _filteredBucket.mapLatest { buckets ->
       buckets.map { bucket ->
-        bucket.light.peakPpfd
+        bucket.peakPpfd
       }.averageOrNull()
     }.stateIn(
       scope = scope,
@@ -166,23 +166,16 @@ class PlaceDataManager(
       val peakPpfd = dailyMaxLux * sensorFactor* luxToPpfdFactor
 
       DailyMetric(
-        light = DailyMetricLight(
-          avgLux ?: 0F,
-          dli,
-          peakPpfd
-        ),
-        temp = DailyMetricTemp(
-          avgTemp ?: 0F,
-          minTemp ?: 0F,
-          maxTemp ?: 0F,
-        ),
-        humidity = DailyMetricHumidity(
-          avgHumidity ?: 0F
-        ),
+        avgLux = avgLux ?: 0F,
+        dli = dli,
+        peakPpfd = peakPpfd,
+        avgTemp = avgTemp ?: 0F,
+        minTemp = minTemp ?: 0F,
+        maxTemp = maxTemp ?: 0F,
+        avgHumidity = avgHumidity ?: 0F,
         date = date,
         totalReadings = dailyReadings.size
       )
-
     }
 
     val filteredNew = newBuckets.filter { it.totalReadings > 200 }

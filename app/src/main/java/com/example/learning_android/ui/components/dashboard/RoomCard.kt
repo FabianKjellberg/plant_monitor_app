@@ -37,9 +37,13 @@ import com.example.learning_android.repositories.IconResource
 @Composable
 fun RoomCard(
   room: DetailedHomeRoom,
-  onClickPlaceCard: (placeId: String) -> Unit
+  onClickPlaceCard: (placeId: String) -> Unit,
+  onDeleteRoom: () -> Unit,
+  onAddPlace: () -> Unit,
+  onRenameRoom: () -> Unit
 ) {
   val nrOfDevices = room.places.sumOf { place ->  place.devices.size }
+  var menuExpanded by remember { mutableStateOf(false) }
 
   Box(
     modifier = Modifier
@@ -90,13 +94,51 @@ fun RoomCard(
             color = MaterialTheme.colorScheme.secondary
           )
         }
-        IconButton(
-          onClick = { }
-        ) {
-          Icon(
-            painterResource(R.drawable.ic_dots_three),
-            contentDescription = "chevron"
-          )
+        Box {
+          IconButton(onClick = { menuExpanded = true }) {
+            Icon(
+              painterResource(R.drawable.ic_dots_three),
+              contentDescription = "Room options"
+            )
+          }
+
+          androidx.compose.material3.DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false }
+          ) {
+            androidx.compose.material3.DropdownMenuItem(
+              text = { Text("Add Place") },
+              onClick = {
+                menuExpanded = false
+                onAddPlace()
+              },
+              leadingIcon = { Icon(painterResource(R.drawable.ic_plus), null) }
+            )
+            androidx.compose.material3.DropdownMenuItem(
+              text = { Text("Rename Room") },
+              onClick = {
+                menuExpanded = false
+                onRenameRoom()
+              },
+              leadingIcon = { Icon(painterResource(R.drawable.ic_gear), null) }
+            )
+            androidx.compose.material3.DropdownMenuItem(
+              text = {
+                Text("Delete", color = MaterialTheme.colorScheme.error)
+              },
+              onClick = {
+                menuExpanded = false
+                onDeleteRoom()
+              },
+              leadingIcon = {
+                Icon(
+                  painterResource(R.drawable.ic_trash),
+                  contentDescription = null,
+                  tint = MaterialTheme.colorScheme.error
+                )
+              }
+            )
+          }
         }
       }
       if(room.places.isEmpty()) {
