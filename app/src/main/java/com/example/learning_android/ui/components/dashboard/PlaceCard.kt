@@ -34,13 +34,13 @@ fun PlaceCard(
   Box(
     modifier = Modifier
       .fillMaxWidth()
-      .clip(RoundedCornerShape(4.dp))
+      .clip(RoundedCornerShape(6.dp))
       .clickable(onClick = { onClick(place.id) })
       .background(MaterialTheme.colorScheme.background)
       .border(
         width = 1.5.dp,
         shape = RoundedCornerShape(6.dp),
-        color = MaterialTheme.colorScheme.secondary
+        color = MaterialTheme.colorScheme.outline
       )
       .padding(10.dp)
       .padding(horizontal = 4.dp),

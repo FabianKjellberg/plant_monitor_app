@@ -43,8 +43,9 @@ fun LightCard(
 
   val lightGradient = radialGradient(
     colors = listOf(
-      Color(0xFFFFF176),
-      Color(0xFFFFB300)
+      Color(0xFFFFE69C),
+      Color(0xFFF2D06B),
+      Color(0xFFEBB34D)
     ),
     center = Offset(1200f, 700f),
     radius = 2000f

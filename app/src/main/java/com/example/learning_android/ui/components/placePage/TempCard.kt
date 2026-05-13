@@ -36,8 +36,9 @@ fun TempCard(
 ) {
   val tempGradient = Brush.linearGradient(
     colors = listOf(
-      Color(0xFFFF8A65),
-      Color(0xFFE53935)
+      Color(0xFFF4C881),
+      Color(0xFFF4AB7E),
+      Color(0xFFDE9572)
     ),
     start = Offset(Float.POSITIVE_INFINITY, 0f),
     end = Offset(0f, Float.POSITIVE_INFINITY)
@@ -94,7 +95,7 @@ fun TempCard(
           verticalArrangement = Arrangement.spacedBy((-4).dp)
         ) {
           Text(
-            text = "Min",
+            text = "MIN",
             color = Color.Black.copy(0.5F),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
@@ -113,7 +114,7 @@ fun TempCard(
           verticalArrangement = Arrangement.spacedBy((-4).dp)
         ) {
           Text(
-            text = "Max",
+            text = "MAX",
             color = Color.Black.copy(0.5F),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold

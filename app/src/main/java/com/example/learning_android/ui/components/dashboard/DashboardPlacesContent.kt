@@ -45,7 +45,10 @@ fun DashboardPlacesContent(
       home.rooms.forEach { room ->
         RoomCard(
           room,
-          onClickPlaceCard = { placeId -> onClickPlaceCard(placeId)}
+          onClickPlaceCard = { placeId -> onClickPlaceCard(placeId)},
+          onAddPlace = {},
+          onDeleteRoom = {},
+          onRenameRoom = {},
         )
       }
       Spacer(Modifier.height(72.dp))

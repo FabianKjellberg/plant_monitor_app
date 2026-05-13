@@ -57,8 +57,6 @@ fun PlacePage(
   val place by viewModel.place.collectAsStateWithLifecycle()
   val manager by viewModel.dataManager.collectAsStateWithLifecycle()
 
-  val selectedMonth = remember { mutableStateOf<Int?>(null) }
-
   if(place == null ){
     Box(
       modifier = Modifier
@@ -123,7 +121,7 @@ fun PlacePage(
       ) {
         Spacer(Modifier.height(12.dp))
         Text(
-          text = "Environmental Data",
+          text = "ENVIRONMENTAL DATA",
           fontSize = 18.sp,
           fontWeight = FontWeight.Bold,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -145,6 +143,7 @@ fun PlacePage(
         SeasonalLightWheel(
           manager = manager
         )
+        Spacer(Modifier.height(8.dp))
       }
     }
   }

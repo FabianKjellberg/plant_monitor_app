@@ -3,12 +3,16 @@ package com.example.learning_android.ui.components.placePage
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +34,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,6 +52,8 @@ fun SeasonalLightWheel(
   val monthlyDataState by manager?.monthlyCoverage?.collectAsStateWithLifecycle()
     ?: remember { mutableStateOf(emptyMap()) }
 
+  val totalDays = monthlyDataState.values.sumOf { it }
+
   val textMeasurer = androidx.compose.ui.text.rememberTextMeasurer()
   val labelStyle = TextStyle(
     color = Color.Black.copy(alpha = 0.5f),
@@ -54,20 +61,23 @@ fun SeasonalLightWheel(
     fontWeight = FontWeight.Bold
   )
 
-  //val fakeMonthlyCoverage = mapOf(
-  //  1 to 31, 2 to 14, 3 to 1, 4 to 0, 5 to 25, 6 to 10,
-  //  7 to 25, 8 to 13, 9 to 31, 10 to 31, 11 to 31, 12 to 31
-  //)
+  /*val fakeMonthlyCoverage = mapOf(
+    1 to 31, 2 to 14, 3 to 1, 4 to 0, 5 to 25, 6 to 10,
+    7 to 25, 8 to 13, 9 to 31, 10 to 31, 11 to 31, 12 to 31
+  )*/
 
-  val winter = Color(0xFF90CAF9)
-  val spring = Color(0xFFA5D6A7)
-  val summer = Color(0xFFFFE082)
-  val autumn = Color(0xFFFFAB91)
+  val winter = Color(0xFF99C0C5)
+  val spring = Color(0xFF9FAC81)
+  val summer = Color(0xFFEACF7C)
+  val autumn = Color(0xFFB9735E)
+
+  val primary = MaterialTheme.colorScheme.primary
+  val secondary = MaterialTheme.colorScheme.outline
 
   val background = Brush.radialGradient(
     listOf(
-      Color.LightGray,
-      Color.LightGray.copy(alpha = 0.5F)
+      Color(0xFFD7D4C1),
+      Color(0xFFD7D4C1).copy(alpha = 0.5F)
     ),
     center = Offset(1200f, 700f),
     radius = 2000f
@@ -82,12 +92,32 @@ fun SeasonalLightWheel(
     horizontalAlignment = Alignment.CenterHorizontally
   )
   {
-    Text(
-      text = "SEASONAL WHEEL",
-      fontSize = 12.sp,
-      color = Color.Black.copy(alpha = 0.5f),
-      fontWeight = FontWeight.Bold,
-    )
+    Row(
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+      verticalAlignment = Alignment.CenterVertically
+
+    ) {
+      Box(modifier = Modifier.weight(1f))
+
+      Text(
+        text = "SEASONAL WHEEL",
+        fontSize = 12.sp,
+        color = Color.Black.copy(alpha = 0.5f),
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.wrapContentWidth()
+      )
+
+      Text(
+        modifier = Modifier.weight(1f),
+        text = "${totalDays}/365",
+        fontSize = 12.sp,
+        color = Color.Black.copy(alpha = 0.5f),
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.End
+      )
+    }
+
 
 
     Box(
@@ -168,13 +198,8 @@ fun SeasonalLightWheel(
           if (fillPercent > 0f) {
             val fillThickness = pieWidth * fillPercent
             drawArc(
-              brush = Brush.radialGradient(
-                colors = if (daysCollected >= totalDays)
-                  listOf(Color(0xFF4CAF50), Color(0xFF2E7D32))
-                else listOf(Color(0xFFFFD54F), Color(0xFFFFA000)),
-                center = center,
-                radius = pieMaxRadius
-              ),
+
+              color = if (daysCollected >= totalDays) primary else secondary,
               startAngle = startAngle,
               sweepAngle = sweepAngle,
               useCenter = false,

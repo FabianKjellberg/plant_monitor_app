@@ -37,8 +37,9 @@ fun HumidCard(
 
   val humidGradient = Brush.radialGradient(
     colors = listOf(
-      Color(0xFF64B5F6),
-      Color(0xFF1976D2)
+      Color(0xFFB0C3C9),
+      Color(0xFF6B8C95),
+      Color(0xFF4D6F7B)
     ),
     center = Offset(0.5f, 0.5f),
     radius = 900f
