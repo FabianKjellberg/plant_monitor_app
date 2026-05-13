@@ -17,59 +17,60 @@ import com.example.learning_android.R
 
 @Composable
 fun DevicePageDropdown(
-    deviceName: String,
-    onChangeName: (name: String) -> Unit
+  deviceName: String,
+  onChangeName: (name: String) -> Unit
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-    var showChangeNameMenu by remember { mutableStateOf(false) }
+  var showMenu by remember { mutableStateOf(false) }
+  var showChangeNameMenu by remember { mutableStateOf(false) }
 
-    Box(
+  Box(
 
+  ) {
+    IconButton(
+      onClick = { showMenu = !showMenu}
     ) {
-        IconButton(
-            onClick = { showMenu = !showMenu}
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_dots_three),
-                contentDescription = "device-menu"
-            )
+      Icon(
+        painter = painterResource(R.drawable.ic_dots_three),
+        contentDescription = "device-menu"
+      )
+    }
+
+
+    DropdownMenu(
+      expanded = showMenu,
+      onDismissRequest = { showMenu = false },
+      containerColor = MaterialTheme.colorScheme.surfaceVariant
+    ) {
+      DropdownMenuItem(
+        text = {
+          Text("Change device name")
+        },
+        onClick = {
+          showMenu = false
+          showChangeNameMenu = true
         }
-
-
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false },
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ) {
-                DropdownMenuItem(
-                    text = {
-                        Text("Change device name")
-                    },
-                    onClick = {
-                        showMenu = false
-                        showChangeNameMenu = true
-                    }
-                )
-                DropdownMenuItem(
-                    text = {
-                        Text("Forget device")
-                    },
-                    onClick = {showMenu = false}
-                )
-            }
-
+      )
+      DropdownMenuItem(
+        text = {
+          Text("Forget device")
+        },
+        onClick = {showMenu = false}
+      )
     }
-    if(showChangeNameMenu) {
-        ChangeNameDialog(
-            onDismiss = {
-                showChangeNameMenu = false
-            },
-            currentName = deviceName,
-            onConfirm = { name ->
-                onChangeName(name)
-                showChangeNameMenu = false
-            }
-        )
-    }
+
+  }
+  if(showChangeNameMenu) {
+    ChangeNameDialog(
+      onDismiss = {
+        showChangeNameMenu = false
+      },
+      currentName = deviceName,
+      onConfirm = { name ->
+        onChangeName(name)
+        showChangeNameMenu = false
+      },
+      title = "Change device name"
+    )
+  }
 
 }

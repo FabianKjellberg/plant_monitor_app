@@ -120,7 +120,7 @@
             contentAlignment = Alignment.BottomCenter
         ) {
             Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = MaterialTheme.colorScheme.surface,
                 shape = cutoutShape,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -3,6 +3,8 @@ package com.example.learning_android.data.remote.api
 import retrofit2.http.GET
 import retrofit2.http.Path
 import com.example.learning_android.data.remote.dto.GetDeviceReadingsResponseDto
+import com.example.learning_android.data.remote.dto.GetReadingsForPlaceResponseDto
+import retrofit2.Response
 import java.time.LocalDate
 
 interface ReadingsApiService {
@@ -17,4 +19,10 @@ interface ReadingsApiService {
         @Path("to") to: String,
         @Path("deviceId") deviceId: String
     ): GetDeviceReadingsResponseDto
+
+    @GET("readings/{placeId}")
+    suspend fun getReadingsForPlace(
+        @Path("placeId") placeId: String,
+    ): Response<GetReadingsForPlaceResponseDto>
+
 }

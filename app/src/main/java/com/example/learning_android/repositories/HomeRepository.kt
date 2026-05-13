@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.learning_android.data.mapper.toDomain
 import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.domain.model.DetailedHome
+import com.example.learning_android.domain.model.DetailedHomePlace
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -60,6 +61,16 @@ object HomeRepository {
   fun getHomeFromId(homeId: String): Flow<DetailedHome?> {
     return _homes.map { homeList ->
       homeList.find { home -> home.id == homeId }
+    }
+  }
+
+  fun getPlaceFromId(placeId: String): Flow<DetailedHomePlace?> {
+    return _homes.map { homeList ->
+      homeList.flatMap { home ->
+        home.rooms }.flatMap { room ->
+          room.places }.find{ place ->
+            place.id == placeId
+          }
     }
   }
 }

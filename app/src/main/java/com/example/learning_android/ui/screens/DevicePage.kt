@@ -1,7 +1,10 @@
 package com.example.learning_android.ui.screens
 
+import android.widget.Space
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -48,6 +52,7 @@ fun DevicePage(
 ) {
 
   val device by viewModel.device.collectAsStateWithLifecycle()
+  val assignedPlace by viewModel.assignedPlace.collectAsStateWithLifecycle()
   var assignModalOpen by remember { mutableStateOf(false) }
 
   Scaffold(
@@ -112,10 +117,33 @@ fun DevicePage(
           modifier = Modifier.weight(1f)
         )
       }
-      Button(
-        onClick = { assignModalOpen = true }
-      ) {
-        Text("assign")
+      Spacer(Modifier.height(8.dp))
+      Box {
+        OutlinedTextField(
+          value = assignedPlace?.name ?: "",
+          onValueChange = {},
+          label = { Text("Assign to place") },
+          readOnly = true,
+          modifier = Modifier.fillMaxWidth(),
+          leadingIcon = assignedPlace?.icon?.let { icon ->
+            {
+              Icon(
+                painterResource(IconResource.getIconById(icon).iconId),
+                contentDescription = null
+              )
+            }
+          },
+          trailingIcon = {
+            Icon(
+              painterResource(R.drawable.ic_chevron_down),
+              contentDescription = null
+            )
+          }
+        )
+        Box(modifier = Modifier
+          .matchParentSize()
+          .clickable(onClick = {assignModalOpen = true})
+        )
       }
     }
     if(device != null) {

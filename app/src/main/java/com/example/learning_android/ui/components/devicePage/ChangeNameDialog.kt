@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun ChangeNameDialog(
+    title: String,
     currentName: String,
     onDismiss: () -> Unit,
     onConfirm: (name: String) -> Unit
@@ -26,7 +27,7 @@ fun ChangeNameDialog(
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = {
-            Text(text = "Change device name")
+            Text(text = title)
                 },
         text = {
             Column(

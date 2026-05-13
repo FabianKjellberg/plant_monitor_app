@@ -58,6 +58,7 @@ fun RoomCard(
       )
       .clickable { onClickRoomCard(room.id) }
       .padding(10.dp)
+      .padding(horizontal = 8.dp)
       .animateContentSize(
       animationSpec = spring(
         dampingRatio = Spring.DampingRatioLowBouncy,
@@ -115,10 +116,6 @@ fun RoomCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
           ) {
             Spacer(Modifier.height(4.dp))
-            Text(
-              text = "${room.name} places",
-              style = MaterialTheme.typography.titleLarge
-            )
             room.places.forEach { place ->
               PlaceCard(
                 place = place,

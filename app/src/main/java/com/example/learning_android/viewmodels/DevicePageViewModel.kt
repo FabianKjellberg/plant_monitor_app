@@ -14,10 +14,16 @@ import com.example.learning_android.data.mapper.toDomain
 import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.data.remote.dto.UpdateNameRequestDto
 import com.example.learning_android.domain.model.ChartEntity
+import com.example.learning_android.domain.model.DetailedHomePlace
 import com.example.learning_android.domain.model.DeviceReadings
 import com.example.learning_android.domain.model.ReadingType
 import com.example.learning_android.repositories.DeviceRepository
+import com.example.learning_android.repositories.HomeRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,106 +32,123 @@ import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 class DevicePageViewModel(
-    savedStateHandle: SavedStateHandle
+  savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val deviceId: String = checkNotNull(savedStateHandle["deviceId"])
+  private val deviceId: String = checkNotNull(savedStateHandle["deviceId"])
 
-    val device = DeviceRepository.deviceHomes.map { homes ->
-        homes.flatMap { home -> home.devices }.find { device -> device.id == deviceId }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = null
-    )
+  val device = DeviceRepository.deviceHomes.map { homes ->
+    homes.flatMap { home -> home.devices }.find { device -> device.id == deviceId }
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5000),
+    initialValue = null
+  )
 
-    private var readings by mutableStateOf<DeviceReadings?>(null)
-    var fromDate by mutableStateOf<Instant>(Instant.now().minus(1, ChronoUnit.DAYS))
-        private set
-    var toDate by mutableStateOf<Instant>(Instant.now())
-        private set
-    var readingType by mutableStateOf(ReadingType.LUX)
-        private set
+  @OptIn(ExperimentalCoroutinesApi::class)
+  val assignedPlace: StateFlow<DetailedHomePlace?> = device.flatMapLatest { currentDevice ->
+    val placeId = currentDevice?.placeId
 
-    var chartValue by mutableStateOf<List<ChartEntity>?>(null)
-
-    init {
-        loadData()
+    if(placeId != null) {
+      HomeRepository.getPlaceFromId(placeId)
     }
-
-    fun updateReadingType(type: ReadingType) {
-        this.readingType = type
-        this.updateChartValues()
+    else {
+      flowOf(null)
     }
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5000),
+    initialValue = null
+  )
 
-    fun updateToDate(toDate: Instant) {
-        this.toDate = toDate
-        loadData();
+
+  private var readings by mutableStateOf<DeviceReadings?>(null)
+  var fromDate by mutableStateOf<Instant>(Instant.now().minus(1, ChronoUnit.DAYS))
+    private set
+  var toDate by mutableStateOf<Instant>(Instant.now())
+    private set
+  var readingType by mutableStateOf(ReadingType.LUX)
+    private set
+
+  var chartValue by mutableStateOf<List<ChartEntity>?>(null)
+
+  init {
+    loadData()
+  }
+
+  fun updateReadingType(type: ReadingType) {
+    this.readingType = type
+    this.updateChartValues()
+  }
+
+  fun updateToDate(toDate: Instant) {
+    this.toDate = toDate
+    loadData();
+  }
+
+  fun updateFromDate(fromDate: Instant) {
+    this.fromDate = fromDate
+    loadData();
+  }
+
+  private fun updateChartValues() {
+    val currentReadings = readings?.readings ?: return;
+
+    chartValue = currentReadings.map { reading ->
+      val value = when (readingType) {
+        ReadingType.LUX -> reading.lux ?: 0F
+        ReadingType.BATTERY_PERCENTAGE -> reading.batteryPercent?.toFloat() ?: 0F
+        ReadingType.HUMIDITY -> reading.humidity ?: 0F
+        ReadingType.PRESSURE -> reading.pressure ?: 0F
+        ReadingType.TEMPERATURE -> reading.temperature ?: 0F
+      }
+
+      ChartEntity(
+        value = value,
+        time = reading.readAt
+      )
     }
+  }
 
-    fun updateFromDate(fromDate: Instant) {
-        this.fromDate = fromDate
-        loadData();
+
+  fun loadData() {
+    viewModelScope.launch {
+      try {
+        val from = fromDate.toString()
+        val to = toDate.toString()
+
+        val response = ApiClient.readingsApiService
+          .getDeviceReadingRange(from, to, deviceId);
+        Log.e("API_TEST", "got sensor data")
+        readings = response.toDomain();
+
+        updateChartValues();
+      } catch (e: Exception) {
+        Log.e("API_TEST", "Error: ${e.message}")
+      }
     }
+  }
 
-    private fun updateChartValues() {
-        val currentReadings = readings?.readings ?: return;
+  fun updateDeviceName(name: String) {
+    val oldDevice = device.value
+    val oldName = oldDevice?.name ?: return
 
-        chartValue = currentReadings.map { reading ->
-            val value = when (readingType) {
-                ReadingType.LUX -> reading.lux ?: 0F
-                ReadingType.BATTERY_PERCENTAGE -> reading.batteryPercent?.toFloat() ?: 0F
-                ReadingType.HUMIDITY -> reading.humidity ?: 0F
-                ReadingType.PRESSURE -> reading.pressure ?: 0F
-                ReadingType.TEMPERATURE -> reading.temperature ?: 0F
-            }
+    viewModelScope.launch {
+      DeviceRepository.updateDeviceName(deviceId, name)
 
-            ChartEntity(
-                value = value,
-                time = reading.readAt
-            )
+      try {
+        val body = UpdateNameRequestDto(name = name, deviceId = deviceId)
+        val response = ApiClient.deviceApiService.changeDeviceName(body)
+
+        if (!response.isSuccessful) {
+          Log.e("API_TEST", "failed updating name, reverting locally: ${response.message()}")
+          DeviceRepository.updateDeviceName(deviceId, oldName)
         }
+      }
+      catch (e: Exception) {
+        Log.e("API_TEST", "failed updating name, reverting locally: ${e.message}")
+        DeviceRepository.updateDeviceName(deviceId, oldName)
+      }
     }
-
-
-    fun loadData() {
-        viewModelScope.launch {
-            try {
-                val from = fromDate.toString()
-                val to = toDate.toString()
-
-                val response = ApiClient.readingsApiService
-                    .getDeviceReadingRange(from, to, deviceId);
-                Log.e("API_TEST", "got sensor data")
-                readings = response.toDomain();
-
-                updateChartValues();
-            } catch (e: Exception) {
-                Log.e("API_TEST", "Error: ${e.message}")
-            }
-        }
-    }
-
-    fun updateDeviceName(name: String) {
-        val oldDevice = device.value
-        val oldName = oldDevice?.name ?: return
-
-        viewModelScope.launch {
-            DeviceRepository.updateDeviceName(deviceId, name)
-
-            try {
-                val body = UpdateNameRequestDto(name = name, deviceId = deviceId)
-                val response = ApiClient.deviceApiService.changeDeviceName(body)
-
-                if (!response.isSuccessful) {
-                    Log.e("API_TEST", "failed updating name, reverting locally: ${response.message()}")
-                    DeviceRepository.updateDeviceName(deviceId, oldName)
-                }
-            }
-            catch (e: Exception) {
-                Log.e("API_TEST", "failed updating name, reverting locally: ${e.message}")
-                DeviceRepository.updateDeviceName(deviceId, oldName)
-            }
-        }
-    }
+  }
 }

@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.stateIn
 class RoomPageViewModel(
   savedStateHandle: SavedStateHandle
 ): ViewModel() {
-  private val homeId: String = checkNotNull(savedStateHandle["homeId"])
   private val roomId: String = checkNotNull(savedStateHandle["roomId"])
 
   val room = HomeRepository.homes.map { homeList ->

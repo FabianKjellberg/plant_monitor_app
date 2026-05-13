@@ -16,7 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +39,7 @@ import com.example.learning_android.ui.components.dashboard.DashboardDeviceConte
 import com.example.learning_android.ui.components.dashboard.DashboardPlacesContent
 import com.example.learning_android.viewmodels.DashboardViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard (
   viewModel: DashboardViewModel,
@@ -56,89 +61,94 @@ fun Dashboard (
     DashboardNav.PLACES -> placesText
   }
 
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .background(MaterialTheme.colorScheme.background)
-      .padding(top = 32.dp)
-  ) {
-    DashboardHeader(
-      headertext = headerText
-    )
+  Scaffold(
+    topBar = {
+      TopAppBar(
+        title = { Text(headerText)},
 
-    Box(modifier = Modifier.weight(1f)) {
-      if(isInitiallyLoading) {
-        Column(
-          modifier = Modifier.fillMaxSize().padding(bottom = 48.dp),
-          verticalArrangement = Arrangement.Center,
-          horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-          CircularProgressIndicator(
-            modifier = Modifier.size(80.dp),
-            color = MaterialTheme.colorScheme.primary,
-            strokeWidth = 8.dp
-          )
-        }
-      }
-      else {
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 20.dp),
-          verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-          AnimatedContent(
-            targetState = viewModel.dashboardNav,
-            transitionSpec = {
+      )
+    }
+  ) { innerPadding ->
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+        .padding(top = innerPadding.calculateTopPadding())
+    ) {
+      Box(modifier = Modifier.weight(1f)) {
+        if (isInitiallyLoading) {
+          Column(
+            modifier = Modifier.fillMaxSize().padding(bottom = 48.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+          ) {
+            CircularProgressIndicator(
+              modifier = Modifier.size(80.dp),
+              color = MaterialTheme.colorScheme.primary,
+              strokeWidth = 8.dp
+            )
+          }
+        } else {
+          Column(
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(top = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+          ) {
+            AnimatedContent(
+              targetState = viewModel.dashboardNav,
+              transitionSpec = {
 
-              if (targetState == DashboardNav.PLACES) {
-                slideInHorizontally { -it } togetherWith
-                        slideOutHorizontally { it }
-              } else {
+                if (targetState == DashboardNav.PLACES) {
+                  slideInHorizontally { -it } togetherWith
+                          slideOutHorizontally { it }
+                } else {
 
-                slideInHorizontally { it }  togetherWith
-                        slideOutHorizontally { -it }
+                  slideInHorizontally { it } togetherWith
+                          slideOutHorizontally { -it }
+                }
+              },
+              label = "DashboardTransition"
+            ) { targetNav ->
+              when (targetNav) {
+                DashboardNav.DEVICES ->
+                  DashboardDeviceContent(
+                    devices = deviceHome?.devices,
+                    onClickCard = { deviceId ->
+                      navController.navigate("${AppPage.DEVICE_PAGE.route}/${deviceId}")
+                    }
+                  )
+
+                DashboardNav.PLACES ->
+                  DashboardPlacesContent(
+                    home = home,
+                    onClickRoomCard = { roomId ->
+                      navController.navigate("${AppPage.ROOM_PAGE.route}/${roomId}")
+                    },
+                    onClickPlaceCard = { placeId ->
+                      navController.navigate("${AppPage.PLACE_PAGE.route}/${placeId}")
+                    }
+                  )
               }
-            },
-            label = "DashboardTransition"
-          ) { targetNav ->
-            when (targetNav) {
-              DashboardNav.DEVICES ->
-                DashboardDeviceContent(
-                  devices = deviceHome?.devices,
-                  onClickCard = { deviceId ->
-                    navController.navigate("${AppPage.DEVICE_PAGE.route}/${deviceId}")
-                  }
-                )
-              DashboardNav.PLACES ->
-                DashboardPlacesContent(
-                  home = home,
-                  onClickRoomCard = { roomId ->
-                    navController.navigate("${AppPage.ROOM_PAGE.route}/${roomId}")
-                  },
-                  onClickPlaceCard = { placeId ->
-                    navController.navigate("${AppPage.PLACE_PAGE.route}/${placeId}")
-                  }
-                )
             }
           }
         }
-      }
 
 
-      Box(
-        modifier = Modifier
-          .fillMaxWidth()
-          .align(Alignment.BottomCenter)
-      ) {
-        BottomNavBar(
-          onNavClick = { nav -> viewModel.onChangeNav(nav) },
-          nav = viewModel.dashboardNav,
-          onAddClick = { nav ->
-            Log.e("API_TEST", "home id in dashboard: $homeId")
-            navController.navigate("${nav.route}/${homeId}")
-          }
-        )
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.BottomCenter)
+        ) {
+          BottomNavBar(
+            onNavClick = { nav -> viewModel.onChangeNav(nav) },
+            nav = viewModel.dashboardNav,
+            onAddClick = { nav ->
+              Log.e("API_TEST", "home id in dashboard: $homeId")
+              navController.navigate("${nav.route}/${homeId}")
+            }
+          )
+        }
       }
     }
   }

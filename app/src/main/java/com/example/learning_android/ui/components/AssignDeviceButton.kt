@@ -1,7 +1,7 @@
 package com.example.learning_android.ui.components
 
-import android.R.attr.alpha
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -16,19 +16,14 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.learning_android.domain.model.DetailedHomePlace
 import com.example.learning_android.domain.model.DeviceType
-import com.example.learning_android.repositories.DeviceRepository
 import com.example.learning_android.repositories.IconResource
 
 @Composable
@@ -39,9 +34,17 @@ fun AssignDeviceButton (
   onClick: () -> Unit,
   busy: Boolean
 ) {
-  val disabled = place.devices.any { device -> deviceId == device.id} || busy
 
-  val dotStatusColor = if (disabled) {
+  val isAssignedDevice = place.devices.any { device -> deviceId == device.id}
+
+  val backgroundColor = if (isAssignedDevice) {
+    MaterialTheme.colorScheme.secondary
+  }
+  else {
+    MaterialTheme.colorScheme.surface
+  }
+
+  val dotStatusColor = if (isAssignedDevice) {
    Color.LightGray
   }
   else if (place.devices.isEmpty()){
@@ -53,7 +56,7 @@ fun AssignDeviceButton (
   else {
     Color.Yellow
   }
-  val disabledAlpha = if (disabled) {
+  val disabledAlpha = if (busy) {
     0.38F
   }
   else {
@@ -63,13 +66,18 @@ fun AssignDeviceButton (
   Box(
     Modifier
       .padding(start = 12.dp)
+      .border(
+        width = 2.dp,
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = disabledAlpha),
+        shape = RoundedCornerShape(4.dp)
+      )
       .clip(RoundedCornerShape(4.dp))
-      .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = disabledAlpha))
+      .background(backgroundColor.copy(alpha = disabledAlpha))
       .padding(8.dp)
       .padding(start = 4.dp)
       .clickable(
         onClick = { onClick() },
-        enabled = !disabled
+        enabled = !busy && !isAssignedDevice
       )
   ){
     Row(
