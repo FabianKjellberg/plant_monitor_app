@@ -19,7 +19,6 @@ import com.example.learning_android.domain.model.DetailedHome
 @Composable
 fun DashboardPlacesContent(
   home: DetailedHome?,
-  onClickRoomCard: (roomId: String) -> Unit,
   onClickPlaceCard: (placeId: String) -> Unit
 ) {
 
@@ -46,7 +45,6 @@ fun DashboardPlacesContent(
       home.rooms.forEach { room ->
         RoomCard(
           room,
-          onClickRoomCard = { roomId -> onClickRoomCard(roomId)},
           onClickPlaceCard = { placeId -> onClickPlaceCard(placeId)}
         )
       }

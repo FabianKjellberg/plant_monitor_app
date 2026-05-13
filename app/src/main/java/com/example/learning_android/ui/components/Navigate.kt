@@ -15,7 +15,6 @@ import com.example.learning_android.ui.screens.DevicePage
 import com.example.learning_android.ui.screens.Entry
 import com.example.learning_android.ui.screens.Login
 import com.example.learning_android.ui.screens.PlacePage
-import com.example.learning_android.ui.screens.RoomPage
 import com.example.learning_android.viewmodels.AddDeviceViewModel
 import com.example.learning_android.viewmodels.AddPlaceViewModel
 import com.example.learning_android.viewmodels.DashboardViewModel
@@ -23,7 +22,6 @@ import com.example.learning_android.viewmodels.DevicePageViewModel
 import com.example.learning_android.viewmodels.EntryViewModel
 import com.example.learning_android.viewmodels.LoginViewModel
 import com.example.learning_android.viewmodels.PlacePageViewModel
-import com.example.learning_android.viewmodels.RoomPageViewModel
 
 @Composable
 fun AppNavigation() {
@@ -65,15 +63,6 @@ fun AppNavigation() {
             val viewModel: DevicePageViewModel = viewModel()
 
             DevicePage(
-                viewModel = viewModel,
-                navController = navController
-            )
-        }
-
-        composable ( route = "${AppPage.ROOM_PAGE.route}/{roomId}") {
-            val viewModel: RoomPageViewModel = viewModel()
-
-            RoomPage(
                 viewModel = viewModel,
                 navController = navController
             )

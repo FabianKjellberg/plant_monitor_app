@@ -4,7 +4,10 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import com.example.learning_android.data.remote.dto.GetDeviceReadingsResponseDto
 import com.example.learning_android.data.remote.dto.GetReadingsForPlaceResponseDto
+import com.example.learning_android.data.remote.dto.PostDailyMetricsBodyDto
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.POST
 import java.time.LocalDate
 
 interface ReadingsApiService {
@@ -25,4 +28,8 @@ interface ReadingsApiService {
         @Path("placeId") placeId: String,
     ): Response<GetReadingsForPlaceResponseDto>
 
+    @POST("readings/daily_metrics")
+    suspend fun postDailyMetrics(
+        @Body body: PostDailyMetricsBodyDto
+    ): Response<Unit>
 }

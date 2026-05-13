@@ -50,12 +50,18 @@ fun LightCard(
     radius = 2000f
   )
 
+  val currentDli = dli
+
   val (heroText, description) = when {
-    dli >= 20f -> "Full Sun" to "Desert-like conditions"
-    dli >= 12f -> "Bright Light" to "Perfect for succulents"
-    dli >= 5f -> "Partial Shade" to "Good for Monsteras"
+    currentDli == null -> "--" to "--"
+    currentDli >= 20f -> "Full Sun" to "Desert-like conditions"
+    currentDli >= 12f -> "Bright Light" to "Perfect for succulents"
+    currentDli >= 5f -> "Partial Shade" to "Good for Monsteras"
     else -> "Low Light" to "Needs grow lights to thrive"
   }
+
+  val dliDisplay = currentDli?.let { "%.1f".format(it) } ?: "--"
+  val ppfdDisplay = peakPpfd?.toInt()?.toString() ?: "--"
 
   Box(
     modifier = modifier
@@ -109,7 +115,7 @@ fun LightCard(
             color = Color.Black.copy(alpha = 0.4f)
           )
           Text(
-            text = "${"%.1f".format(dli)} mol",
+            text = "$dliDisplay mol",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black.copy(alpha = 0.7f)
@@ -126,7 +132,7 @@ fun LightCard(
             color = Color.Black.copy(alpha = 0.4f)
           )
           Text(
-            text = "${peakPpfd.toInt()} μmol",
+            text = "$ppfdDisplay μmol",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black.copy(alpha = 0.7f)

@@ -37,12 +37,9 @@ import com.example.learning_android.repositories.IconResource
 @Composable
 fun RoomCard(
   room: DetailedHomeRoom,
-  onClickRoomCard: (roomId: String) -> Unit,
   onClickPlaceCard: (placeId: String) -> Unit
 ) {
   val nrOfDevices = room.places.sumOf { place ->  place.devices.size }
-
-  var expanded by remember { mutableStateOf(false) }
 
   Box(
     modifier = Modifier
@@ -56,7 +53,6 @@ fun RoomCard(
           )
         )
       )
-      .clickable { onClickRoomCard(room.id) }
       .padding(10.dp)
       .padding(horizontal = 8.dp)
       .animateContentSize(
@@ -95,35 +91,30 @@ fun RoomCard(
           )
         }
         IconButton(
-          onClick = { expanded = !expanded},
+          onClick = { }
         ) {
           Icon(
-            painterResource(
-              if (expanded) R.drawable.ic_chevron_up
-              else R.drawable.ic_chevron_down
-            ),
+            painterResource(R.drawable.ic_dots_three),
             contentDescription = "chevron"
           )
         }
       }
-      if(expanded) {
-        if(room.places.isEmpty()) {
-          Text("Tap '+' to add a place to this room.")
-        }
-        else {
-          Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-          ) {
-            Spacer(Modifier.height(4.dp))
-            room.places.forEach { place ->
-              PlaceCard(
-                place = place,
-                onClick = { placeId ->
-                  onClickPlaceCard(placeId)
-                }
-              )
-            }
+      if(room.places.isEmpty()) {
+        Text("Tap '+' or '...' to add a place to this room.")
+      }
+      else {
+        Column(
+          modifier = Modifier.fillMaxWidth(),
+          verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+          Spacer(Modifier.height(4.dp))
+          room.places.forEach { place ->
+            PlaceCard(
+              place = place,
+              onClick = { placeId ->
+                onClickPlaceCard(placeId)
+              }
+            )
           }
         }
       }

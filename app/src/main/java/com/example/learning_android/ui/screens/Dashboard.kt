@@ -122,9 +122,6 @@ fun Dashboard (
                 DashboardNav.PLACES ->
                   DashboardPlacesContent(
                     home = home,
-                    onClickRoomCard = { roomId ->
-                      navController.navigate("${AppPage.ROOM_PAGE.route}/${roomId}")
-                    },
                     onClickPlaceCard = { placeId ->
                       navController.navigate("${AppPage.PLACE_PAGE.route}/${placeId}")
                     }
@@ -133,7 +130,6 @@ fun Dashboard (
             }
           }
         }
-
 
         Box(
           modifier = Modifier

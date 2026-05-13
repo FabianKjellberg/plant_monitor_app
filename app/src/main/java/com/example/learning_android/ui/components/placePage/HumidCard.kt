@@ -73,38 +73,37 @@ fun HumidCard(
     ) {
       Text(
         text = "HUMIDITY",
+        color = Color.Black.copy(0.5F),
         fontSize = 12.sp,
-        color = Color.Black.copy(alpha = 0.5f),
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Bold
       )
       Column(
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
         Text(
-          text = "avg",
-          color = Color.Black.copy(0.5F),
-          fontSize = 24.sp,
-          fontWeight = FontWeight.Bold
-        )
-        Text(
-          text = "${avg?.let { "%.1f".format(it) } ?: "--"}%",
+          text = comfortLabel,
           color = Color.Black.copy(alpha = 0.7F),
-          fontSize = 32.sp,
+          fontSize = 27.sp,
           fontWeight = FontWeight.ExtraBold
-
         )
       }
       Column(
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
         Text(
-          text = "CLIMATE",
-          color = Color.Black.copy(0.5F),
+          text = "RELATIVE %",
           fontSize = 12.sp,
+          color = Color.Black.copy(alpha = 0.5f),
+          fontWeight = FontWeight.Bold,
+        )
+        Text(
+          text = "avg",
+          color = Color.Black.copy(0.5F),
+          fontSize = 14.sp,
           fontWeight = FontWeight.Bold
         )
         Text(
-          text = comfortLabel,
+          text = "${avg?.let { "%.1f".format(it) } ?: "--"}%",
           color = Color.Black.copy(alpha = 0.7F),
           fontSize = 18.sp,
           fontWeight = FontWeight.ExtraBold

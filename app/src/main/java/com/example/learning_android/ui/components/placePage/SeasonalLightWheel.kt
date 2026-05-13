@@ -40,9 +40,10 @@ import com.example.learning_android.domain.model.place.PlaceDataManager
 @Composable
 fun SeasonalLightWheel(
   manager: PlaceDataManager?,
-  selectedMonth: Int?,
-  onMonthClick: (Int) -> Unit
 ) {
+  val selectedMonth by manager?.selectedMonth?.collectAsStateWithLifecycle()
+    ?: remember {mutableStateOf(null)}
+
   val monthlyDataState by manager?.monthlyCoverage?.collectAsStateWithLifecycle()
     ?: remember { mutableStateOf(emptyMap()) }
 
@@ -103,7 +104,9 @@ fun SeasonalLightWheel(
             detectTapGestures { offset ->
               val angle = calculateAngle(offset, size)
               val month = (angle / 30f).toInt() + 1
-              onMonthClick(if (month > 12) 1 else month)
+              val adjMonth = if (month > 12) 1 else month
+
+              manager?.selectMonth(adjMonth)
             }
           }
       ) {

@@ -56,7 +56,8 @@ class PlacePageViewModel(
           val newManager = PlaceDataManager(
             initialBuckets = emptyList(),
             api = ApiClient,
-            scope = viewModelScope
+            scope = viewModelScope,
+            placeId
           )
           newManager.syncData(readings)
 

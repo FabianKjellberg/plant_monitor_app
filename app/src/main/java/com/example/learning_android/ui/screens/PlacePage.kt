@@ -143,14 +143,7 @@ fun PlacePage(
           )
         }
         SeasonalLightWheel(
-          manager = manager,
-          selectedMonth = selectedMonth.value,
-          onMonthClick = { month -> if (month == selectedMonth.value) {
-            selectedMonth.value = null
-          }
-          else {
-            selectedMonth.value = month
-          }}
+          manager = manager
         )
       }
     }
