@@ -37,6 +37,7 @@ import com.example.learning_android.ui.components.dashboard.BottomNavBar
 import com.example.learning_android.ui.components.dashboard.DashboardHeader
 import com.example.learning_android.ui.components.dashboard.DashboardDeviceContent
 import com.example.learning_android.ui.components.dashboard.DashboardPlacesContent
+import com.example.learning_android.ui.components.modals.AddPlaceModal
 import com.example.learning_android.viewmodels.DashboardViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +61,8 @@ fun Dashboard (
     DashboardNav.DEVICES -> deviceText
     DashboardNav.PLACES -> placesText
   }
+
+  val addPlaceRoom = viewModel.addPlaceRoom.collectAsStateWithLifecycle();
 
   Scaffold(
     topBar = {
@@ -124,7 +127,10 @@ fun Dashboard (
                     home = home,
                     onClickPlaceCard = { placeId ->
                       navController.navigate("${AppPage.PLACE_PAGE.route}/${placeId}")
-                    }
+                    },
+                    onRenameRoom = {roomId, name -> viewModel.renameRoom(roomId, name)},
+                    onAddPlace = {room -> viewModel.setAddPlaceRoom(room)},
+                    onDeleteRoom = {roomId -> viewModel.deleteRoom(roomId)}
                   )
               }
             }
@@ -147,5 +153,12 @@ fun Dashboard (
         }
       }
     }
+    AddPlaceModal(
+      isOpen = addPlaceRoom.value != null,
+      room = addPlaceRoom.value,
+      onDismiss = { viewModel.setAddPlaceRoom(null) },
+      homeId = viewModel.selectedHomeId.value ?: "",
+      onSuccess = {}
+    )
   }
 }

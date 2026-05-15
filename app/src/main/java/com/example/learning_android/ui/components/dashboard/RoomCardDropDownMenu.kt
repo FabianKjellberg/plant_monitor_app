@@ -1,4 +1,4 @@
-package com.example.learning_android.ui.components.devicePage
+package com.example.learning_android.ui.components.dashboard
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenu
@@ -14,48 +14,55 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import com.example.learning_android.R
+import com.example.learning_android.ui.components.devicePage.ChangeNameDialog
 
 @Composable
-fun DevicePageDropdown(
-  deviceName: String,
-  onChangeName: (name: String) -> Unit
+fun RoomCardDropDownMenu(
+  roomName: String,
+  onDeleteRoom: () -> Unit,
+  onAddPlace: () -> Unit,
+  onRenameRoom: (name: String) -> Unit
 ) {
-  var showMenu by remember { mutableStateOf(false) }
+  var menuExpanded by remember { mutableStateOf(false) }
   var showChangeNameMenu by remember { mutableStateOf(false) }
 
-  Box(
-
-  ) {
-    IconButton(
-      onClick = { showMenu = !showMenu}
-    ) {
+  Box {
+    IconButton(onClick = { menuExpanded = true }) {
       Icon(
-        painter = painterResource(R.drawable.ic_dots_three),
-        contentDescription = "device-menu"
+        painterResource(R.drawable.ic_dots_three),
+        contentDescription = "Room options"
       )
     }
 
-
     DropdownMenu(
-      expanded = showMenu,
-      onDismissRequest = { showMenu = false },
-      containerColor = MaterialTheme.colorScheme.surfaceVariant
+      expanded = menuExpanded,
+      onDismissRequest = { menuExpanded = false },
+      containerColor = MaterialTheme.colorScheme.surface
     ) {
       DropdownMenuItem(
-        text = {
-          Text("Change device name")
-        },
+        text = { Text("Add Place") },
         onClick = {
-          showMenu = false
+          menuExpanded = false
+          onAddPlace()
+        },
+        leadingIcon = { Icon(painterResource(R.drawable.ic_plus), null) }
+      )
+      DropdownMenuItem(
+        text = { Text("Rename Room") },
+        onClick = {
+          menuExpanded = false
           showChangeNameMenu = true
         },
-        leadingIcon = { Icon(painterResource(R.drawable.ic_gear),null) },
+        leadingIcon = { Icon(painterResource(R.drawable.ic_gear), null) }
       )
       DropdownMenuItem(
         text = {
-          Text("Forget device", color = MaterialTheme.colorScheme.error)
+          Text("Delete", color = MaterialTheme.colorScheme.error)
         },
-        onClick = {showMenu = false},
+        onClick = {
+          menuExpanded = false
+          onDeleteRoom()
+        },
         leadingIcon = {
           Icon(
             painterResource(R.drawable.ic_trash),
@@ -65,20 +72,18 @@ fun DevicePageDropdown(
         }
       )
     }
-
   }
   if(showChangeNameMenu) {
     ChangeNameDialog(
       onDismiss = {
         showChangeNameMenu = false
       },
-      currentName = deviceName,
+      currentName = roomName,
       onConfirm = { name ->
-        onChangeName(name)
+        onRenameRoom(name)
         showChangeNameMenu = false
       },
-      title = "Change device name"
+      title = "Change room name"
     )
   }
-
 }

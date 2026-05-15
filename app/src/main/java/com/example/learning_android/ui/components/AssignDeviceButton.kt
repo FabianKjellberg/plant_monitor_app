@@ -38,7 +38,7 @@ fun AssignDeviceButton (
   val isAssignedDevice = place.devices.any { device -> deviceId == device.id}
 
   val backgroundColor = if (isAssignedDevice) {
-    MaterialTheme.colorScheme.secondary
+    MaterialTheme.colorScheme.primary
   }
   else {
     MaterialTheme.colorScheme.surface
@@ -68,7 +68,7 @@ fun AssignDeviceButton (
       .padding(start = 12.dp)
       .border(
         width = 2.dp,
-        color = MaterialTheme.colorScheme.secondary.copy(alpha = disabledAlpha),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = disabledAlpha),
         shape = RoundedCornerShape(4.dp)
       )
       .clip(RoundedCornerShape(4.dp))

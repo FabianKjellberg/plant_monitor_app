@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.learning_android.domain.model.DetailedHomePlace
 import com.example.learning_android.domain.model.DetailedHomeRoom
 import com.example.learning_android.repositories.IconResource
 
@@ -40,10 +43,9 @@ fun RoomCard(
   onClickPlaceCard: (placeId: String) -> Unit,
   onDeleteRoom: () -> Unit,
   onAddPlace: () -> Unit,
-  onRenameRoom: () -> Unit
+  onRenameRoom: (name: String) -> Unit
 ) {
   val nrOfDevices = room.places.sumOf { place ->  place.devices.size }
-  var menuExpanded by remember { mutableStateOf(false) }
 
   Box(
     modifier = Modifier
@@ -94,52 +96,12 @@ fun RoomCard(
             color = MaterialTheme.colorScheme.secondary
           )
         }
-        Box {
-          IconButton(onClick = { menuExpanded = true }) {
-            Icon(
-              painterResource(R.drawable.ic_dots_three),
-              contentDescription = "Room options"
-            )
-          }
-
-          androidx.compose.material3.DropdownMenu(
-            expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false }
-          ) {
-            androidx.compose.material3.DropdownMenuItem(
-              text = { Text("Add Place") },
-              onClick = {
-                menuExpanded = false
-                onAddPlace()
-              },
-              leadingIcon = { Icon(painterResource(R.drawable.ic_plus), null) }
-            )
-            androidx.compose.material3.DropdownMenuItem(
-              text = { Text("Rename Room") },
-              onClick = {
-                menuExpanded = false
-                onRenameRoom()
-              },
-              leadingIcon = { Icon(painterResource(R.drawable.ic_gear), null) }
-            )
-            androidx.compose.material3.DropdownMenuItem(
-              text = {
-                Text("Delete", color = MaterialTheme.colorScheme.error)
-              },
-              onClick = {
-                menuExpanded = false
-                onDeleteRoom()
-              },
-              leadingIcon = {
-                Icon(
-                  painterResource(R.drawable.ic_trash),
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.error
-                )
-              }
-            )
-          }
-        }
+      RoomCardDropDownMenu(
+        onDeleteRoom = { onDeleteRoom() },
+        onRenameRoom = { name -> onRenameRoom(name) },
+        onAddPlace = { onAddPlace() },
+        roomName = room.name
+        )
       }
       if(room.places.isEmpty()) {
         Text("Tap '+' or '...' to add a place to this room.")

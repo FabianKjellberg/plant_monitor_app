@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learning_android.domain.model.DashboardNav
 import com.example.learning_android.domain.model.DetailedHome
+import com.example.learning_android.domain.model.DetailedHomeRoom
 import com.example.learning_android.domain.model.DeviceHome
 import com.example.learning_android.repositories.DeviceRepository
 import com.example.learning_android.repositories.HomeRepository
@@ -22,6 +23,20 @@ import kotlinx.coroutines.launch
 class DashboardViewModel : ViewModel() {
   private val _selectedHomeId = MutableStateFlow<String?>(null)
   val selectedHomeId = _selectedHomeId.asStateFlow()
+
+  private val _addPlaceRoom = MutableStateFlow<DetailedHomeRoom?>(null)
+  val addPlaceRoom = _addPlaceRoom.asStateFlow()
+
+  fun setAddPlaceRoom(room: DetailedHomeRoom?) {
+    _addPlaceRoom.value = room
+  }
+
+  var dashboardNav by mutableStateOf(DashboardNav.PLACES)
+    private set
+
+  fun onChangeNav(nav: DashboardNav) {
+    dashboardNav = nav;
+  }
 
   init {
     viewModelScope.launch {
@@ -68,10 +83,11 @@ class DashboardViewModel : ViewModel() {
     isRefetching && currentHome == null
   }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
-  var dashboardNav by mutableStateOf(DashboardNav.PLACES)
-    private set
+  fun renameRoom(roomId: String, name: String) {
 
-  fun onChangeNav(nav: DashboardNav) {
-    dashboardNav = nav;
+  }
+
+  fun deleteRoom(roomId: String){
+
   }
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.example.learning_android.data.mapper.toDomain
 import com.example.learning_android.data.remote.client.ApiClient
+import com.example.learning_android.data.remote.dto.CreatePlaceRequestDto
 import com.example.learning_android.domain.model.DetailedHome
 import com.example.learning_android.domain.model.DetailedHomePlace
 import kotlinx.coroutines.CoroutineScope
@@ -71,6 +72,30 @@ object HomeRepository {
           room.places }.find{ place ->
             place.id == placeId
           }
+    }
+  }
+
+  suspend fun addPlace(roomId: String?, name: String?, iconId: String?): Boolean {
+    if(roomId == null || name == null) return false
+
+    try{
+      val body = CreatePlaceRequestDto(roomId, name, iconId)
+
+      val res = ApiClient.homeApiService.createPlace(body)
+
+      if(res.isSuccessful) {
+        Log.e("API_TEST", "created room")
+        refetchHome()
+        return true
+      }
+      else {
+        Log.e("API_TEST", "failed creating room")
+        return false
+      }
+    }
+    catch (e: Exception) {
+      Log.e("API_TEST", "threw error creating room: ${e.message}")
+      return false
     }
   }
 }

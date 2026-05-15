@@ -15,11 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.learning_android.domain.model.DetailedHome
+import com.example.learning_android.domain.model.DetailedHomeRoom
 
 @Composable
 fun DashboardPlacesContent(
   home: DetailedHome?,
-  onClickPlaceCard: (placeId: String) -> Unit
+  onClickPlaceCard: (placeId: String) -> Unit,
+  onAddPlace: (room: DetailedHomeRoom) -> Unit,
+  onDeleteRoom: (roomId: String) -> Unit,
+  onRenameRoom: (roomId: String, name: String) -> Unit
 ) {
 
   if(home == null) {
@@ -46,9 +50,9 @@ fun DashboardPlacesContent(
         RoomCard(
           room,
           onClickPlaceCard = { placeId -> onClickPlaceCard(placeId)},
-          onAddPlace = {},
-          onDeleteRoom = {},
-          onRenameRoom = {},
+          onAddPlace = { onAddPlace(room) },
+          onDeleteRoom = { onDeleteRoom(room.id) },
+          onRenameRoom = { name -> onRenameRoom(room.id, name)},
         )
       }
       Spacer(Modifier.height(72.dp))

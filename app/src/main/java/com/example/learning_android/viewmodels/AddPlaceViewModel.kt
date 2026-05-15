@@ -85,29 +85,18 @@ class AddPlaceViewModel(
     if(roomId == null) return
 
     viewModelScope.launch {
-      try{
-        val body = CreatePlaceRequestDto(roomId, name, iconId)
+      busy = true;
 
-        val res = ApiClient.homeApiService.createPlace(body)
+      val success = HomeRepository.addPlace(roomId, name, iconId)
 
-        if(res.isSuccessful) {
-          Log.e("API_TEST", "created room")
-          onSuccess(res.body()?.place?.name ?: "")
-          selectedRoom = null
-          userInputPlaceName = ""
-          userInputPlaceIconId = null
-          HomeRepository.refetchHome()
-        }
-        else {
-          Log.e("API_TEST", "failed creating room: ${homeId}")
-        }
+      if(success) {
+        onSuccess(name)
+        selectedRoom = null
+        userInputPlaceName = ""
+        userInputPlaceIconId = null
       }
-      catch (e: Exception) {
-        Log.e("API_TEST", "threw error creating room: ${e.message}")
-      }
-      finally {
-        busy = false
-      }
+
+      busy = false
     }
   }
 }

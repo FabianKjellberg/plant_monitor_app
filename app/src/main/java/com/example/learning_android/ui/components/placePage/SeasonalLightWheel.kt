@@ -72,7 +72,7 @@ fun SeasonalLightWheel(
   val autumn = Color(0xFFB9735E)
 
   val primary = MaterialTheme.colorScheme.primary
-  val secondary = MaterialTheme.colorScheme.outline
+  val secondary = MaterialTheme.colorScheme.secondary
 
   val background = Brush.radialGradient(
     listOf(
