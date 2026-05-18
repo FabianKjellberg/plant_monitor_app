@@ -19,11 +19,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -39,6 +45,7 @@ import com.example.learning_android.ui.components.dashboard.DashboardDeviceConte
 import com.example.learning_android.ui.components.dashboard.DashboardPlacesContent
 import com.example.learning_android.ui.components.modals.AddPlaceModal
 import com.example.learning_android.viewmodels.DashboardViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +57,7 @@ fun Dashboard (
   val home by viewModel.selectedHome.collectAsStateWithLifecycle()
   val isInitiallyLoading by viewModel.isInitialLoading.collectAsStateWithLifecycle()
   val homeId by viewModel.selectedHomeId.collectAsStateWithLifecycle()
+  val scope = rememberCoroutineScope()
 
   val nrOfDevices = deviceHome?.devices?.size?.toString() ?: '-'
 
@@ -64,12 +72,30 @@ fun Dashboard (
 
   val addPlaceRoom = viewModel.addPlaceRoom.collectAsStateWithLifecycle();
 
+  val snackbarHostState = remember { SnackbarHostState() }
+
   Scaffold(
     topBar = {
       TopAppBar(
         title = { Text(headerText)},
 
       )
+    },
+    snackbarHost = {
+      Box(modifier = Modifier
+        .fillMaxSize()
+      ){
+        SnackbarHost(
+          hostState = snackbarHostState,
+          modifier = Modifier.align(Alignment.TopCenter).padding(top = 84.dp)
+        ) { data ->
+          Snackbar(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.background,
+            snackbarData = data
+          )
+        }
+      }
     }
   ) { innerPadding ->
     Column(
@@ -158,7 +184,14 @@ fun Dashboard (
       room = addPlaceRoom.value,
       onDismiss = { viewModel.setAddPlaceRoom(null) },
       homeId = viewModel.selectedHomeId.value ?: "",
-      onSuccess = {}
+      onSuccess = { placeName ->
+        scope.launch {
+          snackbarHostState.showSnackbar(
+            message = "${placeName} succesfully added",
+            duration = SnackbarDuration.Short
+          )
+        }
+      }
     )
   }
 }
