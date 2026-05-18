@@ -2,11 +2,15 @@ package com.example.learning_android.repositories
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.example.learning_android.data.mapper.toDomain
 import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.data.remote.dto.CreatePlaceRequestDto
+import com.example.learning_android.data.remote.dto.DeleteRoomRequestDto
+import com.example.learning_android.data.remote.dto.UpdateRoomNameRequestDto
 import com.example.learning_android.domain.model.DetailedHome
 import com.example.learning_android.domain.model.DetailedHomePlace
+import com.example.learning_android.domain.model.DetailedHomeRoom
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -65,14 +70,64 @@ object HomeRepository {
     }
   }
 
+  fun getRoomFromId(roomId: String): Flow<DetailedHomeRoom?> {
+    return _homes.map { homeList ->
+      homeList.flatMap { home ->
+        home.rooms
+      }.find {
+        room -> room.id == roomId
+      }
+    }
+  }
+
   fun getPlaceFromId(placeId: String): Flow<DetailedHomePlace?> {
     return _homes.map { homeList ->
       homeList.flatMap { home ->
-        home.rooms }.flatMap { room ->
-          room.places }.find{ place ->
-            place.id == placeId
-          }
+        home.rooms
+      }.flatMap { room ->
+          room.places
+        }.find{ place ->
+          place.id == placeId
+        }
     }
+  }
+
+  suspend fun deleteRoom(roomId: String): Boolean {
+    try {
+      val body = DeleteRoomRequestDto(roomId = roomId)
+      val response = ApiClient.homeApiService.deleteRoom(body)
+
+      if(!response.isSuccessful){
+        Log.e("API_TEST", "Unalbe to delete room ${response.message()}")
+        return false
+      }
+      else {
+        refetchHome()
+        return true
+      }
+    }
+    catch (e: Exception) {
+      Log.e("API_TEST", "Unalbe to delete room ${e.message}")
+      return false
+    }
+  }
+
+  suspend fun renameRoom(roomId: String, name: String): Boolean {
+      try {
+        val body = UpdateRoomNameRequestDto(name = name, roomId = roomId)
+        val response = ApiClient.homeApiService.updateRoomName(body);
+
+        if (response.isSuccessful) {
+          refetchHome()
+          return true;
+        }
+        Log.e("API_TEST", "Failed renaming room ${response.message()}")
+        return false
+      }
+      catch (e: Exception) {
+        Log.e("API_TEST", "failed updating name, reverting locally: ${e.message}")
+        return false
+      }
   }
 
   suspend fun addPlace(roomId: String?, name: String?, iconId: String?): Boolean {

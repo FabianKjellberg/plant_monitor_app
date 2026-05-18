@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.domain.model.DashboardNav
 import com.example.learning_android.domain.model.DetailedHome
 import com.example.learning_android.domain.model.DetailedHomeRoom
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -83,11 +86,17 @@ class DashboardViewModel : ViewModel() {
     isRefetching && currentHome == null
   }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
-  fun renameRoom(roomId: String, name: String) {
-
+  fun renameRoom(roomId: String, name: String, onSuccess: () -> Unit) {
+    viewModelScope.launch {
+      val renamed = HomeRepository.renameRoom(roomId, name)
+      if(renamed) onSuccess()
+    }
   }
 
-  fun deleteRoom(roomId: String){
-
+  fun deleteRoom(roomId: String, onSuccess: () -> Unit){
+    viewModelScope.launch {
+      val deleted = HomeRepository.deleteRoom(roomId)
+      if(deleted) onSuccess()
+    }
   }
 }
