@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -16,50 +17,48 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun ChangeNameDialog(
-    title: String,
-    currentName: String,
-    onDismiss: () -> Unit,
-    onConfirm: (name: String) -> Unit
+  title: String,
+  currentName: String,
+  onDismiss: () -> Unit,
+  onConfirm: (name: String) -> Unit
 ) {
 
-    var value by remember { mutableStateOf(currentName)}
+  var value by remember { mutableStateOf(currentName)}
 
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = {
-            Text(text = title)
-                },
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = value,
-                    label = {
-                        Text("Name")
-                    },
-                    onValueChange = { value = it },
-                    singleLine = true,
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirm(value) }
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onDismiss() }
-            ) {
-                Text("Dismiss")
-            }
-        }
+  AlertDialog(
+    onDismissRequest = { onDismiss() },
+    title = {
+      Text(text = title)
+    },
+    containerColor = MaterialTheme.colorScheme.background,
+    text = {
+      Column(
+        modifier = Modifier.fillMaxWidth()
+      ) {
+        OutlinedTextField(
+          value = value,
+          label = {
+            Text("Name")
+          },
+          onValueChange = { value = it },
+          singleLine = true,
+        )
+      }
+    },
+    confirmButton = {
+      TextButton(
+        onClick = { onConfirm(value) }
+      ) {
+        Text("Confirm")
+      }
+    },
+    dismissButton = {
+      TextButton(
+        onClick = { onDismiss() }
+      ) {
+        Text("Dismiss")
+      }
+    }
 
-    )
-
-
-
+  )
 }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import com.example.learning_android.R
+import com.example.learning_android.ui.components.DeleteRoomDialog
 import com.example.learning_android.ui.components.devicePage.ChangeNameDialog
 
 @Composable
@@ -25,6 +26,7 @@ fun RoomCardDropDownMenu(
 ) {
   var menuExpanded by remember { mutableStateOf(false) }
   var showChangeNameMenu by remember { mutableStateOf(false) }
+  var showDeleteMenu by remember { mutableStateOf(false)}
 
   Box {
     IconButton(onClick = { menuExpanded = true }) {
@@ -61,7 +63,7 @@ fun RoomCardDropDownMenu(
         },
         onClick = {
           menuExpanded = false
-          onDeleteRoom()
+          showDeleteMenu = true
         },
         leadingIcon = {
           Icon(
@@ -84,6 +86,19 @@ fun RoomCardDropDownMenu(
         showChangeNameMenu = false
       },
       title = "Change room name"
+    )
+  }
+
+  if(showDeleteMenu) {
+    DeleteRoomDialog(
+      onDismiss = {
+        showDeleteMenu = false
+      },
+      itemName = roomName,
+      onConfirm = {
+        onDeleteRoom()
+      },
+      title = "Delete Room"
     )
   }
 }
