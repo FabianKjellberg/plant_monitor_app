@@ -160,6 +160,7 @@ object HomeRepository {
       val res = ApiClient.homeApiService.updatePlaceName(body)
 
       if(res.isSuccessful) {
+        refetchHome()
         return true
       }
       else {
@@ -177,6 +178,7 @@ object HomeRepository {
     try {
       val res = ApiClient.homeApiService.deletePlace(placeId)
       if(res.isSuccessful) {
+        refetchHome()
         return true
       }
       else {

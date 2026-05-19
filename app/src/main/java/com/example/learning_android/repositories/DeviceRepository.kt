@@ -104,6 +104,7 @@ object DeviceRepository {
       val response = ApiClient.deviceApiService.forgetDevice(deviceId)
 
       if(response.isSuccessful){
+        refetchDevices()
         return true
       }
       else {

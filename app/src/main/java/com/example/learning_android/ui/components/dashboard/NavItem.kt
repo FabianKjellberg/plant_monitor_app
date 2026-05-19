@@ -24,7 +24,7 @@ fun NavItem(
     modifier: Modifier = Modifier,
     painter: Painter
 ) {
-    val color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
+    val color = if (isSelected) MaterialTheme.colorScheme.outline else Color.Gray
 
     Column(
         modifier = modifier
