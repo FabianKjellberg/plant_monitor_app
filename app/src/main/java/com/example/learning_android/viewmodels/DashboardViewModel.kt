@@ -95,6 +95,8 @@ class DashboardViewModel : ViewModel() {
 
   fun deleteRoom(roomId: String, onSuccess: () -> Unit){
     viewModelScope.launch {
+      Log.e("API_TEST", "got here :)")
+
       val deleted = HomeRepository.deleteRoom(roomId)
       if(deleted) onSuccess()
     }

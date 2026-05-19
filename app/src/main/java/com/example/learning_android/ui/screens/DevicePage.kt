@@ -17,12 +17,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +43,7 @@ import com.example.learning_android.ui.components.TimeRangeDropdown
 import com.example.learning_android.ui.components.devicePage.DevicePageDropdown
 import com.example.learning_android.ui.components.modals.SelectPlaceModal
 import com.example.learning_android.viewmodels.DevicePageViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +55,8 @@ fun DevicePage(
   val device by viewModel.device.collectAsStateWithLifecycle()
   val assignedPlace by viewModel.assignedPlace.collectAsStateWithLifecycle()
   var assignModalOpen by remember { mutableStateOf(false) }
+  val snackbarHostState = remember { SnackbarHostState() }
+  val scope = rememberCoroutineScope()
 
   Scaffold(
     topBar = {
@@ -63,11 +71,42 @@ fun DevicePage(
           DevicePageDropdown(
             device?.name ?: "unknown",
             onChangeName = { name ->
-              viewModel.updateDeviceName(name)
-            }
+              viewModel.updateDeviceName(
+                name,
+                onSuccess = {
+                  scope.launch {
+                    snackbarHostState.showSnackbar(
+                      message = "Renamed device to $name",
+                      duration = SnackbarDuration.Short
+                    )
+                  }
+                }
+              )
+            },
+            onForgetDevice = { viewModel.forgetDevice(
+              onSuccess = {
+                navController.popBackStack()
+              }
+            )}
           )
         }
       )
+    },
+    snackbarHost = {
+      Box(modifier = Modifier
+        .fillMaxSize()
+      ){
+        SnackbarHost(
+          hostState = snackbarHostState,
+          modifier = Modifier.align(Alignment.TopCenter).padding(top = 84.dp)
+        ) { data ->
+          Snackbar(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.background,
+            snackbarData = data
+          )
+        }
+      }
     }
   ) { innerPadding ->
     Column(

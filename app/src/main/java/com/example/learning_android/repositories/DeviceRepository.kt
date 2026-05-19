@@ -98,4 +98,22 @@ object DeviceRepository {
       }?.id
     }.distinctUntilChanged()
   }
+
+  suspend fun forgetDevice(deviceId: String): Boolean {
+    try {
+      val response = ApiClient.deviceApiService.forgetDevice(deviceId)
+
+      if(response.isSuccessful){
+        return true
+      }
+      else {
+        Log.e("API_TEST", "failed to remove device ${response.message()}")
+        return false
+      }
+    }
+    catch (e: Exception) {
+      Log.e("API_TEST","failed to remove device ${e.message}")
+      return false
+    }
+  }
 }

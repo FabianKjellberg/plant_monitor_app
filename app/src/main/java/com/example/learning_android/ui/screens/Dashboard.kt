@@ -154,9 +154,23 @@ fun Dashboard (
                     onClickPlaceCard = { placeId ->
                       navController.navigate("${AppPage.PLACE_PAGE.route}/${placeId}")
                     },
-                    onRenameRoom = {roomId, name -> viewModel.renameRoom(roomId, name)},
+                    onRenameRoom = {roomId, name -> viewModel.renameRoom(roomId, name, onSuccess = {
+                      scope.launch {
+                        snackbarHostState.showSnackbar(
+                          message = "successfully renamed room",
+                          duration = SnackbarDuration.Short
+                        )
+                      }
+                    })},
                     onAddPlace = {room -> viewModel.setAddPlaceRoom(room)},
-                    onDeleteRoom = {roomId -> viewModel.deleteRoom(roomId)}
+                    onDeleteRoom = {roomId -> viewModel.deleteRoom(roomId, onSuccess = {
+                      scope.launch {
+                        snackbarHostState.showSnackbar(
+                          message = "successfully deleted room",
+                          duration = SnackbarDuration.Short
+                        )
+                      }
+                    })}
                   )
               }
             }

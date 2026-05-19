@@ -7,6 +7,7 @@ import com.example.learning_android.data.mapper.toDomain
 import com.example.learning_android.data.remote.client.ApiClient
 import com.example.learning_android.data.remote.dto.CreatePlaceRequestDto
 import com.example.learning_android.data.remote.dto.DeleteRoomRequestDto
+import com.example.learning_android.data.remote.dto.UpdatePlaceNameRequestDto
 import com.example.learning_android.data.remote.dto.UpdateRoomNameRequestDto
 import com.example.learning_android.domain.model.DetailedHome
 import com.example.learning_android.domain.model.DetailedHomePlace
@@ -94,8 +95,7 @@ object HomeRepository {
 
   suspend fun deleteRoom(roomId: String): Boolean {
     try {
-      val body = DeleteRoomRequestDto(roomId = roomId)
-      val response = ApiClient.homeApiService.deleteRoom(body)
+      val response = ApiClient.homeApiService.deleteRoom(roomId)
 
       if(!response.isSuccessful){
         Log.e("API_TEST", "Unalbe to delete room ${response.message()}")
@@ -150,6 +150,42 @@ object HomeRepository {
     }
     catch (e: Exception) {
       Log.e("API_TEST", "threw error creating room: ${e.message}")
+      return false
+    }
+  }
+
+  suspend fun changePlaceName(placeId: String, name: String): Boolean {
+    try {
+      val body = UpdatePlaceNameRequestDto(placeId = placeId, name = name)
+      val res = ApiClient.homeApiService.updatePlaceName(body)
+
+      if(res.isSuccessful) {
+        return true
+      }
+      else {
+        Log.e("API_TEST", "Unable to delete place ${res.message()}")
+        return false
+      }
+    }
+    catch (e: Exception) {
+      Log.e("API_TEST", "unable to rename place ${e.message}")
+      return false
+    }
+  }
+
+  suspend fun deletePlace(placeId: String): Boolean {
+    try {
+      val res = ApiClient.homeApiService.deletePlace(placeId)
+      if(res.isSuccessful) {
+        return true
+      }
+      else {
+        Log.e("API_TEST", "Unable to delete place ${res.message()}")
+        return false
+      }
+    }
+    catch (e: Exception) {
+      Log.e("API_TEST", "unable to delete place ${e.message}")
       return false
     }
   }

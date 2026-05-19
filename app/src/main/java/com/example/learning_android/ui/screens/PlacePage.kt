@@ -21,12 +21,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,9 +48,11 @@ import com.example.learning_android.repositories.IconResource
 import com.example.learning_android.ui.components.devicePage.DevicePageDropdown
 import com.example.learning_android.ui.components.placePage.HumidCard
 import com.example.learning_android.ui.components.placePage.LightCard
+import com.example.learning_android.ui.components.placePage.PlacePageDropdown
 import com.example.learning_android.ui.components.placePage.SeasonalLightWheel
 import com.example.learning_android.ui.components.placePage.TempCard
 import com.example.learning_android.viewmodels.PlacePageViewModel
+import kotlinx.coroutines.launch
 import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,6 +63,8 @@ fun PlacePage(
 ){
   val place by viewModel.place.collectAsStateWithLifecycle()
   val manager by viewModel.dataManager.collectAsStateWithLifecycle()
+  val snackbarHostState = remember { SnackbarHostState() }
+  val scope = rememberCoroutineScope()
 
   if(place == null ){
     Box(
@@ -98,14 +107,47 @@ fun PlacePage(
             }
           },
           actions = {
-            DevicePageDropdown(
+            PlacePageDropdown(
               place?.name ?: "unknown",
               onChangeName = { name ->
-                {  }
+                viewModel.changeName(
+                  name,
+                  onSuccess = {
+                    scope.launch {
+                      snackbarHostState.showSnackbar(
+                        message = "Changed name of place to $name",
+                        duration = SnackbarDuration.Short
+                      )
+                    }
+                  }
+                )
+              },
+              onDeletePlace = {
+                viewModel.deletePlace(
+                  onSuccess = {
+                    navController.popBackStack()
+                  }
+                )
               }
             )
           }
         )
+      },
+      snackbarHost = {
+        Box(modifier = Modifier
+          .fillMaxSize()
+        ){
+          SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 84.dp)
+          ) { data ->
+            Snackbar(
+              containerColor = MaterialTheme.colorScheme.primary,
+              contentColor = MaterialTheme.colorScheme.background,
+              snackbarData = data
+            )
+          }
+        }
       }
     ) { paddingValues ->
       Column(

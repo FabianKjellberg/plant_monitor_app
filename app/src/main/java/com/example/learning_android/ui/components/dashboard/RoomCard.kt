@@ -97,7 +97,9 @@ fun RoomCard(
           )
         }
       RoomCardDropDownMenu(
-        onDeleteRoom = { onDeleteRoom() },
+        onDeleteRoom = {
+          onDeleteRoom()
+                       },
         onRenameRoom = { name -> onRenameRoom(name) },
         onAddPlace = { onAddPlace() },
         roomName = room.name

@@ -129,7 +129,7 @@ class DevicePageViewModel(
     }
   }
 
-  fun updateDeviceName(name: String) {
+  fun updateDeviceName(name: String, onSuccess: () -> Unit) {
     val oldDevice = device.value
     val oldName = oldDevice?.name ?: return
 
@@ -144,11 +144,21 @@ class DevicePageViewModel(
           Log.e("API_TEST", "failed updating name, reverting locally: ${response.message()}")
           DeviceRepository.updateDeviceName(deviceId, oldName)
         }
+        else {
+          onSuccess()
+        }
       }
       catch (e: Exception) {
         Log.e("API_TEST", "failed updating name, reverting locally: ${e.message}")
         DeviceRepository.updateDeviceName(deviceId, oldName)
       }
+    }
+  }
+
+  fun forgetDevice(onSuccess: () -> Unit) {
+    viewModelScope.launch {
+      val removed = DeviceRepository.forgetDevice(deviceId)
+      if(removed) onSuccess()
     }
   }
 }

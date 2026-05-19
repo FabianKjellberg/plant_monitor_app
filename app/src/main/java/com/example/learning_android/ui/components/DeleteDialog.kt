@@ -33,7 +33,7 @@ import com.example.learning_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeleteRoomDialog(
+fun DeleteDialog(
   onDismiss: () -> Unit,
   itemName: String,
   onConfirm: () -> Unit,

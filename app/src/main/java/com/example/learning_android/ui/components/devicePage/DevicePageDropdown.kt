@@ -14,14 +14,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import com.example.learning_android.R
+import com.example.learning_android.ui.components.DeleteDialog
 
 @Composable
 fun DevicePageDropdown(
   deviceName: String,
-  onChangeName: (name: String) -> Unit
+  onChangeName: (name: String) -> Unit,
+  onForgetDevice: () -> Unit
 ) {
   var showMenu by remember { mutableStateOf(false) }
   var showChangeNameMenu by remember { mutableStateOf(false) }
+  var showForgetDevice by remember { mutableStateOf(false)}
 
   Box(
 
@@ -55,7 +58,10 @@ fun DevicePageDropdown(
         text = {
           Text("Forget device", color = MaterialTheme.colorScheme.error)
         },
-        onClick = {showMenu = false},
+        onClick = {
+          showMenu = false
+          showForgetDevice = true
+        },
         leadingIcon = {
           Icon(
             painterResource(R.drawable.ic_trash),
@@ -80,5 +86,17 @@ fun DevicePageDropdown(
       title = "Change device name"
     )
   }
-
+  if(showForgetDevice) {
+    DeleteDialog(
+      onDismiss = {
+        showForgetDevice = false
+      },
+      itemName = deviceName,
+      onConfirm = {
+        onForgetDevice()
+        showForgetDevice = false
+      },
+      title = "Forget device"
+    )
+  }
 }

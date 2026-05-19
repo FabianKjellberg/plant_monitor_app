@@ -75,4 +75,18 @@ class PlacePageViewModel(
       }
     }
   }
+
+  fun changeName(name: String, onSuccess: () -> Unit) {
+    viewModelScope.launch {
+      val renamed = HomeRepository.changePlaceName(placeId, name)
+      if (renamed) onSuccess()
+    }
+  }
+
+  fun deletePlace(onSuccess: () -> Unit) {
+    viewModelScope.launch {
+      val removed = HomeRepository.deletePlace(placeId)
+      if (removed) onSuccess()
+    }
+  }
 }

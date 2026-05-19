@@ -6,6 +6,7 @@ import com.example.learning_android.data.remote.dto.CreateRoomRequestDto
 import com.example.learning_android.data.remote.dto.CreateRoomResponseDto
 import com.example.learning_android.data.remote.dto.DeleteRoomRequestDto
 import com.example.learning_android.data.remote.dto.GetHomeResponseDto
+import com.example.learning_android.data.remote.dto.UpdatePlaceNameRequestDto
 import com.example.learning_android.data.remote.dto.UpdateRoomNameRequestDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -13,6 +14,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface HomeApiService {
   @GET("home/all")
@@ -33,8 +35,18 @@ interface HomeApiService {
     @Body body: UpdateRoomNameRequestDto
   ): Response<Unit>
 
-  @DELETE("home/room")
+  @DELETE("home/room/{roomId}")
   suspend fun deleteRoom (
-    @Body body: DeleteRoomRequestDto
+    @Path("roomId") roomId: String
+  ): Response<Unit>
+
+  @PUT("home/place/rename")
+  suspend fun updatePlaceName(
+    @Body body: UpdatePlaceNameRequestDto
+  ): Response<Unit>
+
+  @DELETE("home/place/{placeId}")
+  suspend fun deletePlace(
+    @Path("placeId") placeId: String
   ): Response<Unit>
 }
