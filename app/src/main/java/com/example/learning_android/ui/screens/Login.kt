@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -25,8 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -49,6 +53,7 @@ fun Login(navController: NavController, viewModel: LoginViewModel){
   }
 
   val errorMessage = viewModel.errorMessage.collectAsStateWithLifecycle()
+  val focusManager = LocalFocusManager.current
 
   val loginButtonEnabled =
     viewModel.password.isNotEmpty() &&
@@ -85,7 +90,14 @@ fun Login(navController: NavController, viewModel: LoginViewModel){
       label = {Text("Email")},
       value = viewModel.email,
       onValueChange = { viewModel.email = it},
-      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Email,
+        imeAction = ImeAction.Next
+      ),
+      keyboardActions = KeyboardActions(
+        onNext = { focusManager.moveFocus(FocusDirection.Down) }
+      ),
+      singleLine = true
     )
     Spacer(Modifier.height(8.dp))
     OutlinedTextField(
@@ -94,7 +106,11 @@ fun Login(navController: NavController, viewModel: LoginViewModel){
       value = viewModel.password,
       onValueChange = {viewModel.password = it},
       visualTransformation = PasswordVisualTransformation(),
-      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Password,
+        imeAction = ImeAction.Done
+      ),
+      singleLine = true
     )
     Spacer(Modifier.height(8.dp))
     Box(
@@ -121,7 +137,9 @@ fun Login(navController: NavController, viewModel: LoginViewModel){
     }
     Spacer(Modifier.height(8.dp))
     TextButton(
-      onClick = {}
+      onClick = {
+        navController.navigate(AppPage.REGISTER.route)
+      }
     ) {
       Text(
         text = "create account",

@@ -212,7 +212,7 @@ fun AddPlace(
         title = "Add a place",
         subtitle = "Define specific spots within a room to monitor, like a window or shelf.",
         state = addPlaceState,
-        enabled = !viewModel.busy,
+        enabled = !viewModel.busy && rooms.value.isNotEmpty(),
       ){
         Column(modifier = Modifier.fillMaxWidth()) {
           RoomDropDownMenu(

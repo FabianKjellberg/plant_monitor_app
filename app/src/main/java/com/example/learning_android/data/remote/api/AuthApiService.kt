@@ -3,6 +3,7 @@ package com.example.learning_android.data.remote.api
 import com.example.learning_android.data.remote.dto.LoginRequestDto
 import com.example.learning_android.data.remote.dto.LoginResponseDto
 import com.example.learning_android.data.remote.dto.RefreshResponseDto
+import com.example.learning_android.data.remote.dto.RegisterRequestDto
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -20,4 +21,9 @@ interface AuthApiService {
     suspend fun login(
         @Body body: LoginRequestDto
     ): Response<LoginResponseDto>
+
+    @POST("auth/register")
+    suspend fun register(
+        @Body body: RegisterRequestDto
+    ): Response<Unit>
 }
