@@ -161,6 +161,7 @@ fun PlacePage(
           .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
       ) {
+
         Spacer(Modifier.height(12.dp))
         Text(
           text = "ENVIRONMENTAL DATA",

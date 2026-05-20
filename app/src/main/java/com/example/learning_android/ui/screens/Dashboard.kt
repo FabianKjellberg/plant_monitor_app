@@ -42,6 +42,7 @@ import com.example.learning_android.domain.model.DashboardNav
 import com.example.learning_android.ui.components.dashboard.BottomNavBar
 import com.example.learning_android.ui.components.dashboard.DashboardHeader
 import com.example.learning_android.ui.components.dashboard.DashboardDeviceContent
+import com.example.learning_android.ui.components.dashboard.DashboardDropDown
 import com.example.learning_android.ui.components.dashboard.DashboardPlacesContent
 import com.example.learning_android.ui.components.modals.AddPlaceModal
 import com.example.learning_android.viewmodels.DashboardViewModel
@@ -78,7 +79,21 @@ fun Dashboard (
     topBar = {
       TopAppBar(
         title = { Text(headerText)},
-
+        actions = {
+          DashboardDropDown(
+            onLogout = {
+              viewModel.logout(
+                onSuccess = {
+                  navController.navigate(AppPage.LOGIN.route) {
+                    popUpTo(AppPage.DASHBOARD.route) {
+                      inclusive = true
+                    }
+                  }
+                }
+              )
+            }
+          )
+        }
       )
     },
     snackbarHost = {

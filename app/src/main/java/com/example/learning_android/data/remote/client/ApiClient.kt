@@ -17,88 +17,94 @@ import kotlin.getValue
 
 object ApiClient {
 
-    private const val BASE_URL = "https://plant-monitor-worker-cf.tekital1000.workers.dev"
-    private lateinit var cookieJar: ClearableCookieJar
-    private var appContext: Context? = null;
+  private const val BASE_URL = "https://plant-monitor-worker-cf.tekital1000.workers.dev"
+  private lateinit var cookieJar: ClearableCookieJar
+  private var appContext: Context? = null;
 
-    fun init(context: Context) {
-        val ctx = context.applicationContext
-        appContext = ctx
-        cookieJar = PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(ctx))
-    }
+  fun init(context: Context) {
+    val ctx = context.applicationContext
+    appContext = ctx
+    cookieJar = PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(ctx))
+  }
 
-    fun getContext(): Context {
-        return appContext ?: throw IllegalStateException("ApiClient not initialized!")
-    }
+  fun getContext(): Context {
+    return appContext ?: throw IllegalStateException("ApiClient not initialized!")
+  }
 
-    private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient.Builder()
-            .cookieJar(cookieJar)
-            .addInterceptor { chain ->
-                val requestBuilder = chain.request().newBuilder()
+  fun logout() {
+    val context = appContext ?: return
 
-                appContext?.let { ctx ->
-                    TokenManager.getAccessToken(ctx)?.let { token ->
-                        requestBuilder.addHeader("Authorization", "Bearer $token")
-                    }
-                }
+    TokenManager.clear(context)
+  }
 
-                chain.proceed(requestBuilder.build())
-            }
+  private val okHttpClient: OkHttpClient by lazy {
+    OkHttpClient.Builder()
+      .cookieJar(cookieJar)
+      .addInterceptor { chain ->
+        val requestBuilder = chain.request().newBuilder()
 
-            .authenticator { _, response ->
-                if (response.priorResponse() != null) return@authenticator null
+        appContext?.let { ctx ->
+          TokenManager.getAccessToken(ctx)?.let { token ->
+            requestBuilder.addHeader("Authorization", "Bearer $token")
+          }
+        }
 
-                val bootstrapClient = OkHttpClient.Builder()
-                    .cookieJar(cookieJar)
-                    .build()
+        chain.proceed(requestBuilder.build())
+      }
 
-                val refreshRequest = okhttp3.Request.Builder()
-                    .url("$BASE_URL/auth/refresh")
-                    .post(okhttp3.RequestBody.create(null, ByteArray(0)))
-                    .build()
-                val refreshResponse = bootstrapClient.newCall(refreshRequest).execute()
+      .authenticator { _, response ->
+        if (response.priorResponse() != null) return@authenticator null
 
-                if (refreshResponse.isSuccessful) {
-                    val bodyString = refreshResponse.body()?.string()
-                    val refreshDto = com.google.gson.Gson().fromJson(bodyString, RefreshResponseDto::class.java)
-                    val newAccessToken = refreshDto?.accessToken
+        val bootstrapClient = OkHttpClient.Builder()
+          .cookieJar(cookieJar)
+          .build()
 
-                    val context = appContext
-                    if (newAccessToken != null && context != null) {
-                        TokenManager.saveAccessToken(context, newAccessToken)
+        val refreshRequest = okhttp3.Request.Builder()
+          .url("$BASE_URL/auth/refresh")
+          .post(okhttp3.RequestBody.create(null, ByteArray(0)))
+          .build()
+        val refreshResponse = bootstrapClient.newCall(refreshRequest).execute()
 
-                        return@authenticator response.request().newBuilder()
-                            .header("Authorization", "Bearer $newAccessToken")
-                            .build()
-                    }
-                }
-                null
-            }
-            .build()
-    }
+        if (refreshResponse.isSuccessful) {
+          val bodyString = refreshResponse.body()?.string()
+          val refreshDto = com.google.gson.Gson().fromJson(bodyString, RefreshResponseDto::class.java)
+          val newAccessToken = refreshDto?.accessToken
 
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
+          val context = appContext
+          if (newAccessToken != null && context != null) {
+            TokenManager.saveAccessToken(context, newAccessToken)
 
-    val readingsApiService: ReadingsApiService by lazy {
-        retrofit.create(ReadingsApiService::class.java)
-    }
+            return@authenticator response.request().newBuilder()
+              .header("Authorization", "Bearer $newAccessToken")
+              .build()
+          }
+        }
+        null
+      }
+      .build()
+  }
 
-    val deviceApiService: DeviceApiService by lazy {
-        retrofit.create(DeviceApiService::class.java)
-    }
+  private val retrofit: Retrofit by lazy {
+    Retrofit.Builder()
+      .baseUrl(BASE_URL)
+      .client(okHttpClient)
+      .addConverterFactory(GsonConverterFactory.create())
+      .build()
+  }
 
-    val authApiService: AuthApiService by lazy {
-        retrofit.create(AuthApiService::class.java)
-    }
+  val readingsApiService: ReadingsApiService by lazy {
+    retrofit.create(ReadingsApiService::class.java)
+  }
 
-    val homeApiService: HomeApiService by lazy {
-        retrofit.create(HomeApiService::class.java)
-    }
+  val deviceApiService: DeviceApiService by lazy {
+    retrofit.create(DeviceApiService::class.java)
+  }
+
+  val authApiService: AuthApiService by lazy {
+    retrofit.create(AuthApiService::class.java)
+  }
+
+  val homeApiService: HomeApiService by lazy {
+    retrofit.create(HomeApiService::class.java)
+  }
 }

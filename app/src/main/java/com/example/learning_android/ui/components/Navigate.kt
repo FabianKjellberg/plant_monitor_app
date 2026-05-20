@@ -1,5 +1,9 @@
 package com.example.learning_android.ui.components
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -32,6 +36,19 @@ fun AppNavigation() {
   NavHost(
     navController = navController,
     startDestination = AppPage.ENTRY.route,
+
+    enterTransition = {
+      slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(350))
+    },
+    exitTransition = {
+      slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(350))
+    },
+    popEnterTransition = {
+      slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(350))
+    },
+    popExitTransition = {
+      slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(350))
+    }
   ) {
     composable(route = AppPage.ENTRY.route) {
       val viewModel = remember {
@@ -43,7 +60,22 @@ fun AppNavigation() {
       )
     }
 
-    composable(route = AppPage.LOGIN.route) {
+    composable(
+      route = AppPage.LOGIN.route,
+      enterTransition = {
+        val initialRoute = initialState.destination.route
+
+        val direction = if(initialRoute == AppPage.DASHBOARD.route)
+          AnimatedContentTransitionScope.SlideDirection.Right
+        else
+          AnimatedContentTransitionScope.SlideDirection.Left
+
+        slideIntoContainer(
+          direction,
+          animationSpec = tween(350)
+        )
+      }
+    ) {
       val viewModel = remember { LoginViewModel() }
 
       Login(
@@ -61,7 +93,18 @@ fun AppNavigation() {
       )
     }
 
-    composable( route = AppPage.DASHBOARD.route) {
+    composable(
+      route = AppPage.DASHBOARD.route,
+      exitTransition = {
+        val targetRoute = targetState.destination.route
+        val direction = if (targetRoute == AppPage.LOGIN.route)
+          AnimatedContentTransitionScope.SlideDirection.Right
+        else
+          AnimatedContentTransitionScope.SlideDirection.Left
+
+        slideOutOfContainer(direction, tween(350))
+      },
+    ) {
       val viewModel = remember { DashboardViewModel() }
 
       Dashboard(

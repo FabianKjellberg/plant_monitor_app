@@ -18,8 +18,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -99,6 +97,23 @@ class DashboardViewModel : ViewModel() {
 
       val deleted = HomeRepository.deleteRoom(roomId)
       if(deleted) onSuccess()
+    }
+  }
+
+  fun logout(onSuccess: () -> Unit) {
+    viewModelScope.launch {
+      try {
+        val res = ApiClient.authApiService.logout()
+
+        HomeRepository.stopAutoRefetch()
+        DeviceRepository.stopAutoRefetch()
+
+        ApiClient.logout()
+        onSuccess()
+      }
+      catch (e: Exception) {
+        Log.e("API_TEST", "logged out failed?? ${e.message}")
+      }
     }
   }
 }
