@@ -134,9 +134,11 @@ fun PlacePage(
                   viewModel.changeIcon(
                     iconId,
                     onSuccess = {
+                      val iconName = IconResource.getIconById(iconId).name
+
                       scope.launch {
                         snackbarHostState.showSnackbar(
-                          message = "Changed icon to $iconId",
+                          message = "Changed icon to $iconName",
                           duration = SnackbarDuration.Short
                         )
                       }

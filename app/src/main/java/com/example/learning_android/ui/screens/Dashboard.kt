@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.learning_android.domain.model.AppPage
 import com.example.learning_android.domain.model.DashboardNav
+import com.example.learning_android.repositories.IconResource
 import com.example.learning_android.ui.components.dashboard.BottomNavBar
 import com.example.learning_android.ui.components.dashboard.DashboardHeader
 import com.example.learning_android.ui.components.dashboard.DashboardDeviceContent
@@ -188,9 +189,11 @@ fun Dashboard (
                     })},
                     onChangeRoomIcon = { roomId, iconId ->
                       viewModel.changeRoomIcon(roomId, iconId, onSuccess = {
+                        val iconName = IconResource.getIconById(iconId).name
+
                         scope.launch {
                           snackbarHostState.showSnackbar(
-                            message = "changed icon to $iconId",
+                            message = "changed icon to $iconName",
                             duration = SnackbarDuration.Short,
                           )
                         }
