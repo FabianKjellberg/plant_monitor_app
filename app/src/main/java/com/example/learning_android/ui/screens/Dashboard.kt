@@ -185,7 +185,17 @@ fun Dashboard (
                           duration = SnackbarDuration.Short
                         )
                       }
-                    })}
+                    })},
+                    onChangeRoomIcon = { roomId, iconId ->
+                      viewModel.changeRoomIcon(roomId, iconId, onSuccess = {
+                        scope.launch {
+                          snackbarHostState.showSnackbar(
+                            message = "changed icon to $iconId",
+                            duration = SnackbarDuration.Short,
+                          )
+                        }
+                      })
+                    }
                   )
               }
             }

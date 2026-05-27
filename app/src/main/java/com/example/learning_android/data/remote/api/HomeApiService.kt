@@ -1,5 +1,7 @@
 package com.example.learning_android.data.remote.api
 
+import com.example.learning_android.data.remote.dto.ChangePlaceIconRequestDto
+import com.example.learning_android.data.remote.dto.ChangeRoomIconRequestDto
 import com.example.learning_android.data.remote.dto.CreatePlaceRequestDto
 import com.example.learning_android.data.remote.dto.CreatePlaceResponseDto
 import com.example.learning_android.data.remote.dto.CreateRoomRequestDto
@@ -48,5 +50,15 @@ interface HomeApiService {
   @DELETE("home/place/{placeId}")
   suspend fun deletePlace(
     @Path("placeId") placeId: String
+  ): Response<Unit>
+
+  @PUT("home/room/icon")
+  suspend fun changeRoomIcon(
+    @Body body: ChangeRoomIconRequestDto
+  ): Response<Unit>
+
+  @PUT("home/place/icon")
+  suspend fun changePlaceIcon(
+    @Body body: ChangePlaceIconRequestDto
   ): Response<Unit>
 }

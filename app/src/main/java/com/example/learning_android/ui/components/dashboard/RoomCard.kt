@@ -43,7 +43,8 @@ fun RoomCard(
   onClickPlaceCard: (placeId: String) -> Unit,
   onDeleteRoom: () -> Unit,
   onAddPlace: () -> Unit,
-  onRenameRoom: (name: String) -> Unit
+  onRenameRoom: (name: String) -> Unit,
+  onChangeIcon: (iconId: String) -> Unit
 ) {
   val nrOfDevices = room.places.sumOf { place ->  place.devices.size }
 
@@ -97,12 +98,13 @@ fun RoomCard(
           )
         }
       RoomCardDropDownMenu(
+        room = room,
         onDeleteRoom = {
           onDeleteRoom()
                        },
         onRenameRoom = { name -> onRenameRoom(name) },
         onAddPlace = { onAddPlace() },
-        roomName = room.name
+        onChangeIcon = { iconId -> onChangeIcon(iconId) }
         )
       }
       if(room.places.isEmpty()) {

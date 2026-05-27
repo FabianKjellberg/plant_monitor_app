@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.example.learning_android.data.mapper.toDomain
 import com.example.learning_android.data.remote.client.ApiClient
+import com.example.learning_android.data.remote.dto.ChangePlaceIconRequestDto
+import com.example.learning_android.data.remote.dto.ChangeRoomIconRequestDto
 import com.example.learning_android.data.remote.dto.CreatePlaceRequestDto
 import com.example.learning_android.data.remote.dto.DeleteRoomRequestDto
 import com.example.learning_android.data.remote.dto.UpdatePlaceNameRequestDto
@@ -188,6 +190,44 @@ object HomeRepository {
     }
     catch (e: Exception) {
       Log.e("API_TEST", "unable to delete place ${e.message}")
+      return false
+    }
+  }
+
+  suspend fun changeRoomIcon(roomId: String, iconId: String): Boolean {
+    try {
+      val body = ChangeRoomIconRequestDto(roomId = roomId, iconId = iconId)
+
+      val res = ApiClient.homeApiService.changeRoomIcon(body)
+      if(!res.isSuccessful) {
+        Log.e("API_TEST", "unable to change room icon ${res.message()}")
+        return false
+      }
+
+      refetchHome()
+      return true
+    }
+    catch (e: Exception) {
+      Log.e("API_TEST", "unable to change room icon ${e.message}")
+      return false
+    }
+  }
+
+  suspend fun changePlaceIcon(placeId: String, iconId: String): Boolean {
+    try {
+      val body = ChangePlaceIconRequestDto(placeId = placeId, iconId = iconId)
+
+      val res = ApiClient.homeApiService.changePlaceIcon(body)
+      if(!res.isSuccessful) {
+        Log.e("API_TEST", "unable to change place icon ${res.message()}")
+        return false
+      }
+
+      refetchHome()
+      return true
+    }
+    catch (e: Exception) {
+      Log.e("API_TEST", "unable to change place icon ${e.message}")
       return false
     }
   }

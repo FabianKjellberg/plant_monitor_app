@@ -107,29 +107,44 @@ fun PlacePage(
             }
           },
           actions = {
-            PlacePageDropdown(
-              place?.name ?: "unknown",
-              onChangeName = { name ->
-                viewModel.changeName(
-                  name,
-                  onSuccess = {
-                    scope.launch {
-                      snackbarHostState.showSnackbar(
-                        message = "Changed name of place to $name",
-                        duration = SnackbarDuration.Short
-                      )
+            place?.let { currentPlace ->
+              PlacePageDropdown(
+                place = currentPlace,
+                onChangeName = { name ->
+                  viewModel.changeName(
+                    name,
+                    onSuccess = {
+                      scope.launch {
+                        snackbarHostState.showSnackbar(
+                          message = "Changed name of place to $name",
+                          duration = SnackbarDuration.Short
+                        )
+                      }
                     }
-                  }
-                )
-              },
-              onDeletePlace = {
-                viewModel.deletePlace(
-                  onSuccess = {
-                    navController.popBackStack()
-                  }
-                )
-              }
-            )
+                  )
+                },
+                onDeletePlace = {
+                  viewModel.deletePlace(
+                    onSuccess = {
+                      navController.popBackStack()
+                    }
+                  )
+                },
+                onChangeIcon = { iconId ->
+                  viewModel.changeIcon(
+                    iconId,
+                    onSuccess = {
+                      scope.launch {
+                        snackbarHostState.showSnackbar(
+                          message = "Changed icon to $iconId",
+                          duration = SnackbarDuration.Short
+                        )
+                      }
+                    }
+                  )
+                }
+              )
+            }
           }
         )
       },

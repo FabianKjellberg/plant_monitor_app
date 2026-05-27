@@ -14,19 +14,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import com.example.learning_android.R
+import com.example.learning_android.domain.model.DetailedHomeRoom
 import com.example.learning_android.ui.components.DeleteDialog
 import com.example.learning_android.ui.components.devicePage.ChangeNameDialog
+import com.example.learning_android.ui.components.modals.SelectIconModal
 
 @Composable
 fun RoomCardDropDownMenu(
-  roomName: String,
+  room: DetailedHomeRoom,
   onDeleteRoom: () -> Unit,
   onAddPlace: () -> Unit,
-  onRenameRoom: (name: String) -> Unit
+  onRenameRoom: (name: String) -> Unit,
+  onChangeIcon: (iconId: String) -> Unit
 ) {
   var menuExpanded by remember { mutableStateOf(false) }
   var showChangeNameMenu by remember { mutableStateOf(false) }
   var showDeleteMenu by remember { mutableStateOf(false)}
+  var showEditIcon by remember { mutableStateOf(false)}
 
   Box {
     IconButton(onClick = { menuExpanded = true }) {
@@ -42,7 +46,7 @@ fun RoomCardDropDownMenu(
       containerColor = MaterialTheme.colorScheme.surface
     ) {
       DropdownMenuItem(
-        text = { Text("Add Place") },
+        text = { Text("Add place") },
         onClick = {
           menuExpanded = false
           onAddPlace()
@@ -50,10 +54,18 @@ fun RoomCardDropDownMenu(
         leadingIcon = { Icon(painterResource(R.drawable.ic_plus), null) }
       )
       DropdownMenuItem(
-        text = { Text("Rename Room") },
+        text = { Text("Rename room") },
         onClick = {
           menuExpanded = false
           showChangeNameMenu = true
+        },
+        leadingIcon = { Icon(painterResource(R.drawable.ic_gear), null) }
+      )
+      DropdownMenuItem(
+        text = { Text("Change icon")},
+        onClick = {
+          menuExpanded = false
+          showEditIcon = true
         },
         leadingIcon = { Icon(painterResource(R.drawable.ic_gear), null) }
       )
@@ -80,7 +92,7 @@ fun RoomCardDropDownMenu(
       onDismiss = {
         showChangeNameMenu = false
       },
-      currentName = roomName,
+      currentName = room.name,
       onConfirm = { name ->
         onRenameRoom(name)
         showChangeNameMenu = false
@@ -94,12 +106,20 @@ fun RoomCardDropDownMenu(
       onDismiss = {
         showDeleteMenu = false
       },
-      itemName = roomName,
+      itemName = room.name,
       onConfirm = {
         onDeleteRoom()
         showDeleteMenu = false
       },
       title = "Delete Room"
+    )
+  }
+
+  if(showEditIcon) {
+    SelectIconModal(
+      onDismiss = { showEditIcon = false },
+      onClick = { iconId -> onChangeIcon(iconId) },
+      selectedIcon = room.icon
     )
   }
 }

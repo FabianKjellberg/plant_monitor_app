@@ -23,7 +23,8 @@ fun DashboardPlacesContent(
   onClickPlaceCard: (placeId: String) -> Unit,
   onAddPlace: (room: DetailedHomeRoom) -> Unit,
   onDeleteRoom: (roomId: String) -> Unit,
-  onRenameRoom: (roomId: String, name: String) -> Unit
+  onRenameRoom: (roomId: String, name: String) -> Unit,
+  onChangeRoomIcon: (roomId: String, iconId: String) -> Unit
 ) {
 
   if(home == null) {
@@ -53,6 +54,7 @@ fun DashboardPlacesContent(
           onAddPlace = { onAddPlace(room) },
           onDeleteRoom = { onDeleteRoom(room.id) },
           onRenameRoom = { name -> onRenameRoom(room.id, name)},
+          onChangeIcon = { iconId -> onChangeRoomIcon(room.id, iconId)}
         )
       }
       Spacer(Modifier.height(72.dp))

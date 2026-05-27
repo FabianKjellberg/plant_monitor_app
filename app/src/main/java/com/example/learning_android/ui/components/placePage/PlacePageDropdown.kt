@@ -14,18 +14,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import com.example.learning_android.R
+import com.example.learning_android.domain.model.DetailedHomePlace
 import com.example.learning_android.ui.components.DeleteDialog
 import com.example.learning_android.ui.components.devicePage.ChangeNameDialog
+import com.example.learning_android.ui.components.modals.SelectIconModal
 
 @Composable
 fun PlacePageDropdown(
-  placeName: String,
+  place: DetailedHomePlace,
   onChangeName: (name: String) -> Unit,
   onDeletePlace: () -> Unit,
+  onChangeIcon: (iconId: String) -> Unit,
 ) {
   var showMenu by remember { mutableStateOf(false) }
   var showChangeNameMenu by remember { mutableStateOf(false) }
   var showDeletePlace by remember { mutableStateOf(false)}
+  var showChangeIcon by remember { mutableStateOf(false)}
 
   Box(
 
@@ -45,11 +49,21 @@ fun PlacePageDropdown(
     ) {
       DropdownMenuItem(
         text = {
-          Text("Change place name")
+          Text("Rename place")
         },
         onClick = {
           showMenu = false
           showChangeNameMenu = true
+        },
+        leadingIcon = { Icon(painterResource(R.drawable.ic_gear),null) },
+      )
+      DropdownMenuItem(
+        text = {
+          Text("Change icon")
+        },
+        onClick = {
+          showMenu = false
+          showChangeIcon = true
         },
         leadingIcon = { Icon(painterResource(R.drawable.ic_gear),null) },
       )
@@ -77,7 +91,7 @@ fun PlacePageDropdown(
       onDismiss = {
         showChangeNameMenu = false
       },
-      currentName = placeName,
+      currentName = place.name,
       onConfirm = { name ->
         onChangeName(name)
         showChangeNameMenu = false
@@ -90,12 +104,21 @@ fun PlacePageDropdown(
       onDismiss = {
         showDeletePlace = false
       },
-      itemName = placeName,
+      itemName = place.name,
       onConfirm = {
         onDeletePlace()
         showDeletePlace = false
       },
       title = "Delete place"
+    )
+  }
+  if(showChangeIcon) {
+    SelectIconModal(
+      onDismiss = { showChangeIcon = false },
+      onClick = { iconId ->
+        onChangeIcon(iconId)
+      },
+      selectedIcon = place.icon
     )
   }
 }

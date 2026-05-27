@@ -89,4 +89,11 @@ class PlacePageViewModel(
       if (removed) onSuccess()
     }
   }
+
+  fun changeIcon(iconId: String, onSuccess: () -> Unit) {
+    viewModelScope.launch {
+      val changedIcon = HomeRepository.changePlaceIcon(placeId, iconId)
+      if(changedIcon) onSuccess()
+    }
+  }
 }
