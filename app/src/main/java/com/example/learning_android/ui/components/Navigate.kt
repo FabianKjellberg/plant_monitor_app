@@ -6,11 +6,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.learning_android.data.remote.client.AuthEvent
+import com.example.learning_android.data.remote.client.SessionHandler
 import com.example.learning_android.domain.model.AppPage
 import com.example.learning_android.ui.screens.AddDevice
 import com.example.learning_android.ui.screens.AddPlace
@@ -32,6 +35,18 @@ import com.example.learning_android.viewmodels.RegisterViewModel
 @Composable
 fun AppNavigation() {
   val navController = rememberNavController()
+
+  LaunchedEffect(Unit) {
+    SessionHandler.events.collect { event ->
+      when(event) {
+        AuthEvent.SessionExpired -> {
+          navController.navigate(AppPage.LOGIN.route) {
+            popUpTo(0) { inclusive = true }
+          }
+        }
+      }
+    }
+  }
 
   NavHost(
     navController = navController,

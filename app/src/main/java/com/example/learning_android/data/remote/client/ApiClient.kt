@@ -12,6 +12,7 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.franmontiel.persistentcookiejar.ClearableCookieJar
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import kotlin.getValue
 
@@ -79,6 +80,12 @@ object ApiClient {
               .build()
           }
         }
+        appContext?.let { TokenManager.clear(it) }
+
+        runBlocking {
+          SessionHandler.sessionExpired()
+        }
+
         null
       }
       .build()
