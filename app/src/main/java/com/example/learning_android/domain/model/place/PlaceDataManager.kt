@@ -131,6 +131,7 @@ class PlaceDataManager(
   }
 
   suspend fun syncData(readings: List<DeviceReading>) {
+
     val zone = ZoneId.systemDefault()
 
     val newBuckets: List<DailyMetric> = readings.groupBy { reading ->

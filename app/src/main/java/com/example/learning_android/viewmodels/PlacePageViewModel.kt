@@ -21,8 +21,8 @@ class PlacePageViewModel(
 ): ViewModel() {
   private val placeId: String = checkNotNull(savedStateHandle["placeId"])
 
-  private val _busy = MutableStateFlow(false)
-  val busy = _busy.asStateFlow()
+  private val _loadingEnvironmentalData = MutableStateFlow(false)
+  val loadingEnvironmentalData = _loadingEnvironmentalData.asStateFlow()
   private val _dataManager = MutableStateFlow<PlaceDataManager?>(null)
   val dataManager = _dataManager.asStateFlow()
 
@@ -45,7 +45,7 @@ class PlacePageViewModel(
 
   fun fetchData() {
     viewModelScope.launch {
-      _busy.value = true;
+      _loadingEnvironmentalData.value = true;
 
       try{
         val res = ApiClient.readingsApiService.getReadingsForPlace(placeId)
@@ -71,7 +71,7 @@ class PlacePageViewModel(
         Log.e("API_TEST", "Fetching place data failed: ${e.message}}")
       }
       finally {
-        _busy.value = true
+        _loadingEnvironmentalData.value = false
       }
     }
   }

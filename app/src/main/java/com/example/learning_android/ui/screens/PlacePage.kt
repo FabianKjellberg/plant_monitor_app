@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,10 +45,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.android.identity.documenttype.Icon
 import com.example.learning_android.R
+import com.example.learning_android.domain.model.AppPage
 import com.example.learning_android.repositories.IconResource
 import com.example.learning_android.ui.components.devicePage.DevicePageDropdown
+import com.example.learning_android.ui.components.placePage.EnviromentalData
 import com.example.learning_android.ui.components.placePage.HumidCard
 import com.example.learning_android.ui.components.placePage.LightCard
+import com.example.learning_android.ui.components.placePage.PlacePageDevices
 import com.example.learning_android.ui.components.placePage.PlacePageDropdown
 import com.example.learning_android.ui.components.placePage.SeasonalLightWheel
 import com.example.learning_android.ui.components.placePage.TempCard
@@ -63,6 +67,7 @@ fun PlacePage(
 ){
   val place by viewModel.place.collectAsStateWithLifecycle()
   val manager by viewModel.dataManager.collectAsStateWithLifecycle()
+  val loadingEnvironmentalData = viewModel.loadingEnvironmentalData.collectAsStateWithLifecycle()
   val snackbarHostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
 
@@ -178,32 +183,17 @@ fun PlacePage(
           .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
       ) {
-
         Spacer(Modifier.height(12.dp))
-        Text(
-          text = "ENVIRONMENTAL DATA",
-          fontSize = 18.sp,
-          fontWeight = FontWeight.Bold,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        LightCard(
-          manager = manager
-        )
-        Row(
-          horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-          TempCard(
-            manager = manager,
-            modifier = Modifier.weight(1F))
-          HumidCard(
-            manager = manager,
-            modifier = Modifier.weight(1F)
+        EnviromentalData(manager = manager, loading = loadingEnvironmentalData.value)
+        place?.let { currentPlace ->
+          PlacePageDevices(
+            devices = currentPlace.devices,
+            onClickDevice = { deviceId ->
+              navController.navigate("${AppPage.DEVICE_PAGE.route}/${deviceId}")
+            }
           )
         }
-        SeasonalLightWheel(
-          manager = manager
-        )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
       }
     }
   }
